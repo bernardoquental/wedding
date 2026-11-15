@@ -1,0 +1,102 @@
+---
+import { t, languages, route, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  routeKey: RouteKey;
+}
+const { lang, routeKey } = Astro.props;
+const d = t(lang);
+const home = (hash: string) => route('home', lang, hash);
+const links = [
+  { href: home('#historia'), label: d.nav.story },
+  { href: home('#programacao'), label: d.nav.schedule },
+  { href: home('#local'), label: d.nav.venue },
+  { href: home('#hospedagem'), label: d.nav.travel },
+  { href: home('#duvidas'), label: d.nav.faq },
+  { href: route('gifts', lang), label: d.nav.gifts },
+];
+---
+<header class="nav">
+  <div class="nav__inner">
+    <a class="nav__mono script" href={route('home', lang)} aria-label="Luiza & Bernardo">L&amp;B</a>
+    <button class="nav__toggle caps" type="button" aria-expanded="false" aria-controls="nav-menu">
+      <span class="nav__open">{d.nav.menu}</span><span class="nav__close">{d.nav.close}</span>
+    </button>
+    <nav id="nav-menu" class="nav__menu" aria-label="Menu">
+      <ul>
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+      <a class="btn btn--small btn--solid" href={home('#rsvp')}>{d.nav.rsvp}</a>
+      <ul class="nav__langs" aria-label="Idioma / Language">
+        {(Object.keys(languages) as Lang[]).map((l) => (
+          <li>
+            <a href={route(routeKey, l)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} title={languages[l]}>
+              {l.toUpperCase()}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('.nav')!;
+  const toggle = nav.querySelector<HTMLButtonElement>('.nav__toggle')!;
+  const setOpen = (open: boolean) => {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
+  nav.querySelectorAll('.nav__menu a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 40);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .nav {
+    position: sticky; top: 0; z-index: 20;
+    background: color-mix(in srgb, var(--cream) 0%, transparent);
+    transition: background 0.3s, border-color 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.is-scrolled, .nav.is-open {
+    background: color-mix(in srgb, var(--cream) 94%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom-color: var(--ink-faint);
+  }
+  .nav__inner {
+    width: min(100% - 2 * var(--gutter), 1280px); margin-inline: auto;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 64px;
+  }
+  .nav__mono { font-size: 2.4rem; text-decoration: none; padding: 4px 8px 0 0; }
+  .nav__menu { display: flex; align-items: center; gap: 28px; }
+  .nav__menu ul { display: flex; gap: 22px; list-style: none; margin: 0; padding: 0; }
+  .nav__menu ul a { text-decoration: none; font-size: 1.05rem; }
+  .nav__menu ul a:hover { text-decoration: underline; }
+  .nav__langs { gap: 10px !important; font-size: 0.9rem; letter-spacing: 0.1em; }
+  .nav__langs a { color: var(--ink-soft); }
+  .nav__langs a[aria-current] { color: var(--ink); font-weight: 600; text-decoration: underline; }
+  .nav__toggle {
+    display: none; background: none; border: var(--line) solid var(--ink); border-radius: 999px;
+    color: var(--ink); padding: 8px 16px; cursor: pointer; font-size: 0.8rem;
+  }
+  .nav__close { display: none; }
+
+  @media (max-width: 960px) {
+    .nav__toggle { display: block; }
+    .nav.is-open .nav__open { display: none; }
+    .nav.is-open .nav__close { display: inline; }
+    .nav__menu {
+      display: none; position: fixed; inset: 64px 0 0; background: var(--cream);
+      flex-direction: column; justify-content: center; gap: 32px; padding: 24px; overflow-y: auto;
+    }
+    .nav.is-open .nav__menu { display: flex; }
+    .nav__menu ul { flex-direction: column; align-items: center; gap: 18px; }
+    .nav__menu ul a { font-size: 1.5rem; }
+    .nav__langs { flex-direction: row !important; }
+  }
+</style>

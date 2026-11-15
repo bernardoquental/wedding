@@ -1,0 +1,171 @@
+---
+import { t, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang).rsvp;
+const messages = {
+  fullNameError: d.fullNameError,
+  contactError: d.contactError,
+  sending: d.sending,
+  submit: d.submit,
+  successYes: d.successYes,
+  successNo: d.successNo,
+  error: d.error,
+  demo: d.demo,
+  guestName: d.guestName,
+};
+---
+<form class="rsvp narrow" novalidate data-messages={JSON.stringify(messages)}>
+  <label class="field">
+    <span>{d.fullName}</span>
+    <input class="input" name="fullName" autocomplete="name" required aria-describedby="fullName-hint fullName-err" />
+    <small id="fullName-hint">{d.fullNameHint}</small>
+    <small id="fullName-err" class="error" hidden></small>
+  </label>
+
+  <div class="rsvp__row">
+    <label class="field">
+      <span>{d.email}</span>
+      <input class="input" type="email" name="email" autocomplete="email" />
+    </label>
+    <label class="field">
+      <span>{d.phone}</span>
+      <input class="input" type="tel" name="phone" autocomplete="tel" />
+    </label>
+  </div>
+  <p id="contact-err" class="error" hidden></p>
+
+  <fieldset class="field">
+    <legend>{d.attending}</legend>
+    <label class="choice"><input type="radio" name="attending" value="yes" checked /> {d.yes}</label>
+    <label class="choice"><input type="radio" name="attending" value="no" /> {d.no}</label>
+  </fieldset>
+
+  <div class="rsvp__yes">
+    <label class="field">
+      <span>{d.guests}</span>
+      <select class="input" name="guests">
+        {[0, 1, 2, 3, 4].map((n) => <option value={n}>{n}</option>)}
+      </select>
+    </label>
+    <div class="rsvp__guests"></div>
+    <label class="field">
+      <span>{d.dietary}</span>
+      <input class="input" name="dietary" />
+    </label>
+  </div>
+
+  <label class="field">
+    <span>{d.message}</span>
+    <textarea class="input" name="message" rows="4"></textarea>
+  </label>
+
+  <!-- Campo isca para robôs de spam: humanos não veem -->
+  <label class="visually-hidden" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off" /></label>
+
+  <div class="center">
+    <button class="btn btn--solid" type="submit">{d.submit}</button>
+  </div>
+  <div class="rsvp__status" role="status" aria-live="polite"></div>
+</form>
+
+<script>
+  import { send } from '../lib/api';
+  import { isFullName, isEmail, isPhone } from '../lib/validate';
+
+  document.querySelectorAll<HTMLFormElement>('form.rsvp').forEach((form) => {
+    const m = JSON.parse(form.dataset.messages!);
+    const el = <T extends Element = HTMLInputElement>(sel: string) => form.querySelector<T>(sel)!;
+    const guestsBox = el<HTMLDivElement>('.rsvp__guests');
+    const yesBox = el<HTMLDivElement>('.rsvp__yes');
+    const status = el<HTMLDivElement>('.rsvp__status');
+    const button = el<HTMLButtonElement>('button[type=submit]');
+
+    const renderGuests = () => {
+      const n = Number(el<HTMLSelectElement>('[name=guests]').value);
+      const current = [...guestsBox.querySelectorAll('input')].map((i) => i.value);
+      guestsBox.innerHTML = '';
+      for (let i = 0; i < n; i++) {
+        const label = document.createElement('label');
+        label.className = 'field';
+        label.innerHTML = `<span>${m.guestName} ${i + 1}</span><input class="input" name="guest${i}" autocomplete="off" />`;
+        label.querySelector('input')!.value = current[i] ?? '';
+        guestsBox.append(label);
+      }
+    };
+    el('[name=guests]').addEventListener('change', renderGuests);
+    form.querySelectorAll('[name=attending]').forEach((r) =>
+      r.addEventListener('change', () => {
+        yesBox.hidden = el('[name=attending]:checked').value !== 'yes';
+      }),
+    );
+
+    const setError = (input: HTMLInputElement, errEl: HTMLElement, msg: string | null) => {
+      input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+      errEl.hidden = !msg;
+      errEl.textContent = msg ?? '';
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      const get = (k: string) => String(fd.get(k) ?? '').trim();
+      const attending = get('attending');
+      const guests = attending === 'yes' ? Number(get('guests')) : 0;
+      const guestNames = Array.from({ length: guests }, (_, i) => get(`guest${i}`));
+
+      const nameInput = el('[name=fullName]');
+      let valid = true;
+      const nameOk = isFullName(get('fullName'));
+      setError(nameInput, el<HTMLElement>('#fullName-err'), nameOk ? null : m.fullNameError);
+      valid &&= nameOk;
+      const contactOk = isEmail(get('email')) || isPhone(get('phone'));
+      setError(el('[name=email]'), el<HTMLElement>('#contact-err'), contactOk ? null : m.contactError);
+      valid &&= contactOk;
+      guestNames.forEach((g, i) => {
+        const input = el(`[name=guest${i}]`);
+        const ok = isFullName(g);
+        input.setAttribute('aria-invalid', ok ? 'false' : 'true');
+        valid &&= ok;
+      });
+      if (!valid) {
+        form.querySelector<HTMLElement>('[aria-invalid=true]')?.focus();
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = m.sending;
+      try {
+        const res = await send('rsvp', {
+          fullName: get('fullName'),
+          email: get('email'),
+          phone: get('phone'),
+          attending,
+          guests,
+          guestNames,
+          dietary: get('dietary'),
+          message: get('message'),
+          website: get('website'),
+        });
+        if (!res.ok) throw new Error(res.error);
+        form.querySelectorAll('.field, fieldset, .rsvp__row, .center').forEach((n) => ((n as HTMLElement).hidden = true));
+        status.innerHTML = `<p class="notice">${attending === 'yes' ? m.successYes : m.successNo}</p>` +
+          (res.demo ? `<p class="notice notice--soft">${m.demo}</p>` : '');
+        status.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } catch (err) {
+        console.error(err);
+        status.innerHTML = `<p class="error center">${m.error}</p>`;
+        button.disabled = false;
+        button.textContent = m.submit;
+      }
+    });
+  });
+</script>
+
+<style>
+  .rsvp__row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+  @media (max-width: 600px) { .rsvp__row { grid-template-columns: 1fr; } }
+  .rsvp__status { margin-top: 16px; display: grid; gap: 12px; }
+  .rsvp__status :global(.notice:first-child) { font-size: var(--step-1); }
+</style>

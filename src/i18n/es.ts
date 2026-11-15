@@ -1,0 +1,118 @@
+import type pt from './pt';
+
+const es: typeof pt = {
+  meta: {
+    title: 'Luiza & Bernardo · 20.03.2027',
+    description: 'La boda de Luiza & Bernardo — 20 de marzo de 2027, Santa Teresa, Río de Janeiro.',
+  },
+  nav: {
+    story: 'Nuestra historia',
+    schedule: 'Programa',
+    venue: 'Lugar',
+    dressCode: 'Vestimenta',
+    travel: 'Alojamiento',
+    faq: 'Preguntas',
+    rsvp: 'Confirmar asistencia',
+    gifts: 'Regalos',
+    menu: 'Menú',
+    close: 'Cerrar',
+  },
+  hero: {
+    dateLong: '20 de marzo de 2027',
+    countdown: { days: 'días', hours: 'horas', minutes: 'min', seconds: 'seg' },
+    cta: 'Confirmar asistencia',
+  },
+  story: {
+    title: 'Nuestra historia',
+    paragraphs: [
+      '[completar] Cómo se conocieron — la primera cita, el lugar, un detalle gracioso.',
+      '[completar] Y cómo llegaron hasta aquí: viajes, la mudanza, la pedida.',
+    ],
+  },
+  schedule: {
+    title: 'Programa',
+    items: [
+      { time: '16:00', title: 'Ceremonia', text: '[completar] Lugar de la ceremonia' },
+      { time: '17:30', title: 'Cóctel', text: '[completar] Al atardecer' },
+      { time: '19:00', title: 'Cena', text: '[completar]' },
+      { time: '21:00', title: 'Fiesta', text: 'Hasta el amanecer' },
+    ],
+  },
+  venue: {
+    title: 'Lugar',
+    text: '[completar] Nombre del espacio, dirección completa y una frase sobre el barrio de Santa Teresa.',
+    map: 'Abrir mapa',
+  },
+  dressCode: {
+    title: 'Vestimenta',
+    name: '[completar] Cóctel',
+    text: '[completar] Telas livianas para el calor de marzo en Río; el barrio tiene calles empinadas de adoquines, mejor tacones anchos.',
+  },
+  travel: {
+    title: 'Alojamiento',
+    items: [
+      { title: 'Aeropuertos', text: '[completar] Galeão (GIG) y Santos Dumont (SDU).' },
+      { title: 'Dónde alojarse', text: '[completar] Hoteles en Santa Teresa, Glória y Flamengo.' },
+      { title: 'Transporte', text: '[completar] Recomendamos taxi o aplicación; habrá traslados desde ...' },
+    ],
+  },
+  faq: {
+    title: 'Preguntas',
+    items: [
+      { q: '¿Puedo ir con acompañante?', a: '[completar] Los nombres en la invitación son los invitados confirmados.' },
+      { q: '¿Pueden ir niños?', a: '[completar]' },
+      { q: '¿Hasta cuándo confirmo?', a: 'Hasta el 31 de enero de 2027, con el formulario de abajo.' },
+      { q: '¿Cómo funciona la lista de regalos?', a: 'Elige un regalo y paga por Pix (sin comisiones) o con tarjeta. ¡Luego déjanos un mensaje para saber que fuiste tú!' },
+    ],
+  },
+  rsvp: {
+    title: 'Confirmar asistencia',
+    intro: 'Te pedimos confirmar hasta el 31 de enero de 2027.',
+    fullName: 'Nombre y apellido',
+    fullNameHint: 'Como en la invitación',
+    fullNameError: 'Escribe tu nombre y apellido.',
+    email: 'Correo electrónico',
+    phone: 'Teléfono / WhatsApp',
+    contactError: 'Indica un correo o teléfono.',
+    attending: '¿Vienes?',
+    yes: 'Sí, ahí estaré',
+    no: 'Lamentablemente no podré ir',
+    guests: 'Acompañantes',
+    guestName: 'Nombre y apellido del acompañante',
+    dietary: 'Restricciones alimentarias',
+    message: 'Un mensaje para los novios',
+    submit: 'Enviar confirmación',
+    sending: 'Enviando…',
+    successYes: '¡Asistencia confirmada! Tenemos muchas ganas de celebrar contigo.',
+    successNo: 'Gracias por avisar — te vamos a extrañar.',
+    error: 'No pudimos enviarlo ahora. Inténtalo de nuevo o escríbenos por WhatsApp.',
+    demo: 'Modo demostración: configura appsScriptUrl en src/config.ts para guardar las respuestas.',
+  },
+  gifts: {
+    title: 'Lista de regalos',
+    intro: 'Tu presencia es nuestro mayor regalo. Si quieres regalarnos algo, elige una de las opciones — el valor llega directo a nosotros, sin comisiones.',
+    filterAll: 'Todos',
+    give: 'Regalar',
+    custom: 'Valor libre',
+    customText: 'Elige el valor que quieras.',
+    pixTitle: 'Pagar con Pix',
+    pixSteps: 'Abre la app de tu banco brasileño, elige Pix › Código QR o Pix copia y pega, y verifica el nombre del destinatario.',
+    copy: 'Copiar código Pix',
+    copied: '¡Copiado!',
+    amount: 'Valor',
+    card: '¿Pagas desde el exterior? Pagar con tarjeta',
+    cardNote: 'Los pagos con tarjeta son procesados por Stripe.',
+    messageTitle: 'Déjanos un mensaje',
+    messageIntro: 'Después de pagar, cuéntanos que fuiste tú :)',
+    name: 'Tu nombre y apellido',
+    message: 'Mensaje',
+    send: 'Enviar mensaje',
+    thanks: '¡Muchas gracias! Recibimos tu mensaje.',
+    back: 'Volver al sitio',
+  },
+  footer: {
+    made: 'Hecho con cariño en Río de Janeiro',
+  },
+};
+
+export default es;

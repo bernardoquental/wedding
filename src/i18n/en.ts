@@ -1,0 +1,118 @@
+import type pt from './pt';
+
+const en: typeof pt = {
+  meta: {
+    title: 'Luiza & Bernardo · 03.20.2027',
+    description: 'The wedding of Luiza & Bernardo — March 20, 2027, Santa Teresa, Rio de Janeiro.',
+  },
+  nav: {
+    story: 'Our story',
+    schedule: 'Schedule',
+    venue: 'Venue',
+    dressCode: 'Dress code',
+    travel: 'Travel',
+    faq: 'FAQ',
+    rsvp: 'RSVP',
+    gifts: 'Gifts',
+    menu: 'Menu',
+    close: 'Close',
+  },
+  hero: {
+    dateLong: 'March 20, 2027',
+    countdown: { days: 'days', hours: 'hours', minutes: 'min', seconds: 'sec' },
+    cta: 'RSVP',
+  },
+  story: {
+    title: 'Our story',
+    paragraphs: [
+      '[to fill] How you met — the first date, the place, a funny detail.',
+      '[to fill] And how you got here: trips, moving in, the proposal.',
+    ],
+  },
+  schedule: {
+    title: 'Schedule',
+    items: [
+      { time: '4:00 pm', title: 'Ceremony', text: '[to fill] Ceremony location' },
+      { time: '5:30 pm', title: 'Cocktails', text: '[to fill] At sunset' },
+      { time: '7:00 pm', title: 'Dinner', text: '[to fill]' },
+      { time: '9:00 pm', title: 'Party', text: 'Until sunrise' },
+    ],
+  },
+  venue: {
+    title: 'Venue',
+    text: '[to fill] Venue name, full address and a line about the Santa Teresa neighbourhood.',
+    map: 'Open map',
+  },
+  dressCode: {
+    title: 'Dress code',
+    name: '[to fill] Cocktail attire',
+    text: '[to fill] Light fabrics for Rio’s March heat; the neighbourhood has steep cobblestone streets, so block heels are best.',
+  },
+  travel: {
+    title: 'Travel',
+    items: [
+      { title: 'Airports', text: '[to fill] Galeão (GIG) and Santos Dumont (SDU).' },
+      { title: 'Where to stay', text: '[to fill] Hotel suggestions in Santa Teresa, Glória and Flamengo.' },
+      { title: 'Getting there', text: '[to fill] We recommend taxi or ride apps; shuttles will leave from ...' },
+    ],
+  },
+  faq: {
+    title: 'FAQ',
+    items: [
+      { q: 'Can I bring a plus-one?', a: '[to fill] The names on the invitation are the confirmed guests.' },
+      { q: 'Are children welcome?', a: '[to fill]' },
+      { q: 'When should I RSVP by?', a: 'By January 31, 2027, using the form below.' },
+      { q: 'How does the gift registry work?', a: 'Pick a gift and pay via Pix (no fees) or card. Then leave us a note so we know it was you!' },
+    ],
+  },
+  rsvp: {
+    title: 'RSVP',
+    intro: 'Please let us know by January 31, 2027.',
+    fullName: 'First and last name',
+    fullNameHint: 'As on the invitation',
+    fullNameError: 'Please write your first and last name.',
+    email: 'Email',
+    phone: 'Phone / WhatsApp',
+    contactError: 'Please enter an email or phone number.',
+    attending: 'Will you attend?',
+    yes: 'Joyfully accepts',
+    no: 'Regretfully declines',
+    guests: 'Guests',
+    guestName: 'Guest’s first and last name',
+    dietary: 'Dietary restrictions',
+    message: 'A note for the couple',
+    submit: 'Send RSVP',
+    sending: 'Sending…',
+    successYes: 'You’re in! We can’t wait to celebrate with you.',
+    successNo: 'Thank you for letting us know — we’ll miss you.',
+    error: 'We couldn’t send it right now. Please try again or message us on WhatsApp.',
+    demo: 'Demo mode: set appsScriptUrl in src/config.ts to save responses.',
+  },
+  gifts: {
+    title: 'Gift registry',
+    intro: 'Your presence is the greatest gift. If you’d like to give something, choose one of the gifts below — it goes straight to us, with no fees.',
+    filterAll: 'All',
+    give: 'Give',
+    custom: 'Any amount',
+    customText: 'Choose any amount you like.',
+    pixTitle: 'Pay with Pix',
+    pixSteps: 'Open your Brazilian bank app, choose Pix › QR Code or Pix copy & paste, and check the recipient name.',
+    copy: 'Copy Pix code',
+    copied: 'Copied!',
+    amount: 'Amount',
+    card: 'Paying from abroad? Pay by card',
+    cardNote: 'Card payments are processed by Stripe.',
+    messageTitle: 'Leave a note',
+    messageIntro: 'After paying, let us know it was you :)',
+    name: 'Your first and last name',
+    message: 'Message',
+    send: 'Send note',
+    thanks: 'Thank you so much! We got your note.',
+    back: 'Back to the site',
+  },
+  footer: {
+    made: 'Made with love in Rio de Janeiro',
+  },
+};
+
+export default en;

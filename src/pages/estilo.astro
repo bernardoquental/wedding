@@ -1,0 +1,168 @@
+---
+/**
+ * Guia de estilo: cores, ilustrações vetorizadas, tipografia e componentes.
+ * Página interna (noindex) para aprovar o padrão visual.
+ */
+import { readdirSync } from 'node:fs';
+import Base from '../layouts/Base.astro';
+import Art from '../components/Art.astro';
+import SectionTitle from '../components/SectionTitle.astro';
+
+const colors = [
+  { name: 'Creme', token: '--cream', hex: '#FFFCD6', use: 'Fundo (amostrado do papel do save the date)' },
+  { name: 'Creme profundo', token: '--cream-deep', hex: '#F6EFBF', use: 'Seleção, faixas, destaques' },
+  { name: 'Papel', token: '--paper', hex: '#FFFEF0', use: 'Cartões e campos' },
+  { name: 'Cobalto', token: '--ink', hex: '#4652A3', use: 'Tinta: traço, texto, botões (amostrado do traço)' },
+  { name: 'Cobalto escuro', token: '--ink-strong', hex: '#36418A', use: 'Hover, QR Code' },
+  { name: 'Cobalto 70%', token: '--ink-soft', hex: '', use: 'Texto secundário' },
+  { name: 'Cobalto 22%', token: '--ink-faint', hex: '', use: 'Linhas finas, bordas' },
+];
+const art = readdirSync('public/art')
+  .filter((f) => f.endsWith('.svg'))
+  .map((f) => f.replace('.svg', ''))
+  .sort();
+const scripts = [
+  { family: 'Mrs Saint Delafield', note: 'Padrão atual — traço fino e inclinado, mais próximo da letra original' },
+  { family: 'Herr Von Muellerhoff', note: 'Muito parecida, mais solta e alongada' },
+  { family: 'Italianno', note: 'Mais legível, menos inclinada' },
+  { family: 'Parisienne', note: 'Mais formal e arredondada' },
+  { family: 'Pinyon Script', note: 'Caligrafia clássica de convite (copperplate)' },
+];
+---
+<Base lang="pt" routeKey="style" title="Guia de estilo" allFonts noindex>
+  <div class="wrap guide">
+    <header class="center">
+      <p class="caps">Luiza &amp; Bernardo</p>
+      <h1 class="script guide__h1">Guia de estilo</h1>
+      <p class="narrow">
+        Padrão visual derivado do save the date desenhado à mão: duas cores (creme e cobalto), traço fino,
+        ilustrações vetorizadas a partir da arte original e caligrafia + serifa clássica.
+      </p>
+    </header>
+
+    <section>
+      <h2 class="caps">1 · Cores</h2>
+      <div class="swatches">
+        {colors.map((c) => (
+          <div class="swatch">
+            <div class="swatch__chip" style={`background:var(${c.token})`}></div>
+            <strong>{c.name}</strong>
+            <code>{c.token}{c.hex && ` · ${c.hex}`}</code>
+            <small>{c.use}</small>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="caps">2 · Tipografia</h2>
+      <h3 class="label">Letterings originais (vetorizados)</h3>
+      <div class="letterings">
+        <Art name="lettering-nomes" />
+        <Art name="lettering-save-the-date" />
+        <Art name="lettering-data" />
+        <Art name="lettering-local" />
+      </div>
+
+      <h3 class="label">Caligrafia para títulos novos — candidatas (comparar com o original acima)</h3>
+      {scripts.map((s) => (
+        <div class="specimen">
+          <p class="specimen__sample" style={`font-family:'${s.family}', cursive`}>Luiza &amp; Bernardo · Nossa história · Programação</p>
+          <p class="specimen__meta"><strong>{s.family}</strong> — {s.note}</p>
+        </div>
+      ))}
+
+      <h3 class="label">Texto — Cormorant Garamond</h3>
+      <div class="type-scale">
+        <p style="font-size:var(--step-2)">Título de bloco · Cerimônia às 16h</p>
+        <p style="font-size:var(--step-1)">Texto de destaque — conte aqui um trecho da história de vocês.</p>
+        <p>Texto corrido. Santa Teresa é um bairro de ladeiras, bondinho e casarões, no alto do centro do Rio de Janeiro.</p>
+        <p class="caps">Rótulo em versaletes · 20 · 03 · 2027</p>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="caps">3 · Títulos de seção (faixa + caligrafia)</h2>
+      <SectionTitle text="Nossa história" />
+      <SectionTitle text="Programação" />
+    </section>
+
+    <section>
+      <h2 class="caps">4 · Ilustrações vetorizadas</h2>
+      <p>Geradas por <code>tools/vectorize.py</code> a partir da arte original. Coloridas pela cor do texto, nítidas em qualquer tamanho.</p>
+      <div class="art-grid">
+        {art.map((name) => (
+          <figure>
+            <div class="art-grid__box"><Art name={name} /></div>
+            <figcaption><code>{name}</code></figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2 class="caps">5 · Componentes</h2>
+      <div class="components">
+        <div>
+          <h3 class="label">Botões</h3>
+          <p class="row"><a class="btn btn--solid" href="#">Confirmar presença</a> <a class="btn" href="#">Abrir no mapa</a></p>
+          <p class="row"><a class="btn btn--small btn--solid" href="#">Todos</a> <a class="btn btn--small" href="#">Lua de mel</a></p>
+          <h3 class="label">Divisor</h3>
+          <div class="divider"><Art name="concha" /></div>
+        </div>
+        <div>
+          <h3 class="label">Formulário</h3>
+          <label class="field"><span>Nome e sobrenome</span><input class="input" placeholder="Luiza Souza" /><small>Como está no convite</small></label>
+          <fieldset class="field">
+            <legend>Você vai?</legend>
+            <label class="choice"><input type="radio" name="x" checked /> Vou com certeza</label>
+            <label class="choice"><input type="radio" name="x" /> Infelizmente não poderei ir</label>
+          </fieldset>
+        </div>
+        <div>
+          <h3 class="label">Cartão de presente</h3>
+          <div class="gift-demo">
+            <Art name="concha" style="width:56px;margin:0 auto 18px" />
+            <p class="gift-demo__name">Jantar na lua de mel</p>
+            <p class="gift-demo__desc">Um jantar especial na viagem.</p>
+            <p class="gift-demo__price">R$ 250</p>
+            <a class="btn btn--small" href="#">Presentear</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .guide { padding-block: 40px 80px; }
+  .guide section { padding-top: 64px; margin-top: 64px; border-top: 1px solid var(--ink-faint); }
+  .guide h2 { margin-bottom: 28px; }
+  .guide__h1 { font-size: var(--step-script); margin: 12px 0 20px; }
+  .label { font-size: 1rem; font-weight: 600; margin: 32px 0 14px; color: var(--ink-soft); font-style: italic; }
+  code { font-size: 0.85em; }
+
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; }
+  .swatch { display: grid; gap: 4px; font-size: 1rem; }
+  .swatch__chip { height: 84px; border-radius: var(--radius); border: 1px solid var(--ink-faint); margin-bottom: 6px; }
+  .swatch small { color: var(--ink-soft); line-height: 1.3; }
+
+  .letterings { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 32px; align-items: center; }
+  .specimen { padding: 14px 0; border-bottom: 1px solid var(--ink-faint); }
+  .specimen__sample { font-size: clamp(2rem, 1.4rem + 2.5vw, 3.2rem); line-height: 1.2; margin: 0 0 4px; }
+  .specimen__meta { font-size: 1rem; margin: 0; color: var(--ink-soft); }
+  .type-scale p { margin-bottom: 0.6em; }
+
+  .art-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+  .art-grid figure { margin: 0; text-align: center; }
+  .art-grid__box { height: 200px; display: grid; place-items: center; padding: 12px; background: var(--paper); border: 1px solid var(--ink-faint); }
+  .art-grid__box :global(.art) { width: 100%; height: 176px; aspect-ratio: auto !important; }
+  .art-grid figcaption { font-size: 0.9rem; margin-top: 6px; }
+
+  .components { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 40px; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .gift-demo { padding: 32px 24px 28px; text-align: center; background: var(--paper); border: var(--line) solid var(--ink-faint); border-radius: var(--radius); }
+  .gift-demo__name { font-size: var(--step-1); margin-bottom: 8px; }
+  .gift-demo__desc { color: var(--ink-soft); font-size: 1rem; }
+  .gift-demo__price { font-size: var(--step-2); }
+</style>

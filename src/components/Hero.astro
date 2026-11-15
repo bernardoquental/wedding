@@ -1,0 +1,96 @@
+---
+/**
+ * Recompõe o save the date em camadas vetoriais, nas posições originais
+ * (coordenadas da arte de referência 1427×2000 — ver tools/vectorize.py).
+ */
+import Art from './Art.astro';
+import { config } from '../config';
+import { t, route, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+
+const W = 1427, H = 2000;
+const place = (x0: number, y0: number, x1: number, y1: number) =>
+  `left:${(x0 / W) * 100}%;top:${(y0 / H) * 100}%;width:${((x1 - x0) / W) * 100}%;`;
+const kicker = { pt: 'Vamos nos casar', en: 'We’re getting married', es: 'Nos casamos' }[lang];
+---
+<section class="hero" aria-label="Luiza & Bernardo — 20.03.2027">
+  <div class="hero__art">
+    <Art name="moldura" class="layer l1" style={place(0, 0, W, H)} />
+    <p class="hero__kicker caps layer l2" style={place(300, 610, 1127, 700)}>{kicker}</p>
+    <Art name="lettering-data" class="layer l2" style={place(495, 726, 935, 835)} label={d.hero.dateLong} />
+    <Art name="faixa" class="layer l3" style={place(205, 890, 1232, 1200)} />
+    <Art name="lettering-nomes" class="layer l4" style={place(330, 915, 1080, 1090)} label="Luiza & Bernardo" />
+    <Art name="lettering-local" class="layer l5" style={place(480, 1160, 945, 1370)} label="Santa Teresa, Rio de Janeiro" />
+    <div class="hero__count layer l5" style={place(545, 1560, 882, 1680)} data-date={config.date}>
+      {(['days', 'hours', 'minutes', 'seconds'] as const).map((k) => (
+        <div><strong data-unit={k}>–</strong><span>{d.hero.countdown[k]}</span></div>
+      ))}
+    </div>
+    <div class="hero__cta layer l5" style={place(400, 1700, 1027, 1800)}>
+      <a class="btn" href={route('home', lang, '#rsvp')}>{d.hero.cta}</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const el = document.querySelector<HTMLElement>('.hero__count');
+  if (el) {
+    const target = new Date(el.dataset.date!).getTime();
+    const units = {
+      days: 86400000,
+      hours: 3600000,
+      minutes: 60000,
+      seconds: 1000,
+    } as const;
+    const tick = () => {
+      let diff = Math.max(0, target - Date.now());
+      for (const [k, ms] of Object.entries(units)) {
+        const v = Math.floor(diff / ms);
+        diff -= v * ms;
+        el.querySelector(`[data-unit="${k}"]`)!.textContent = k === 'days' ? String(v) : String(v).padStart(2, '0');
+      }
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>
+
+<style>
+  .hero {
+    display: grid; place-items: center;
+    padding: 0 var(--gutter) 24px;
+    margin-top: -64px; /* sob a nav transparente */
+    padding-top: 64px;
+  }
+  .hero__art {
+    position: relative;
+    width: min(100%, calc((100svh - 40px) * 0.7135), 760px);
+    aspect-ratio: 1427 / 2000;
+    container-type: inline-size;
+  }
+  .hero__art :global(.layer) { position: absolute; margin: 0; }
+  .hero__kicker { text-align: center; font-size: 2.9cqw; letter-spacing: 0.24em; line-height: 6.3cqw; white-space: nowrap; }
+  .hero__count {
+    display: flex; justify-content: center; gap: 2.6cqw; text-align: center;
+  }
+  .hero__count div { display: grid; }
+  .hero__count strong { font-size: 5cqw; font-weight: 500; line-height: 1.1; font-variant-numeric: lining-nums tabular-nums; }
+  .hero__count span { font-size: 1.8cqw; text-transform: uppercase; letter-spacing: 0.2em; color: var(--ink-soft); }
+  .hero__cta { display: flex; justify-content: center; }
+  .hero__cta .btn { font-size: max(11px, 2.2cqw); min-height: 0; padding: 1.8cqw 4.2cqw; letter-spacing: 0.18em; }
+
+  /* Entrada: a moldura aparece e as camadas vão "chegando" */
+  .hero__art :global(.layer) { animation: ink-in 1.4s cubic-bezier(.2, .7, .2, 1) both; }
+  .hero__art :global(.l2) { animation-delay: 0.35s; }
+  .hero__art :global(.l3) { animation-delay: 0.6s; }
+  .hero__art :global(.l4) { animation-delay: 0.9s; }
+  .hero__art :global(.l5) { animation-delay: 1.2s; }
+  @keyframes ink-in {
+    from { opacity: 0; filter: blur(3px); transform: translateY(6px); }
+    to { opacity: 1; filter: none; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero__art :global(.layer) { animation: none; } }
+</style>
