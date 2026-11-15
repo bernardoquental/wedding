@@ -1,0 +1,95 @@
+/*
+ * Base do site. Cores, tipos e componentes vêm do design system:
+ *   tokens.css      → tokens (cópia do DS + aliases)
+ *   components.css  → classes lb-* (cópia do bundle.css do DS)
+ * Aqui fica só o que o DS não cobre: layout de página, seções e utilitários.
+ */
+@import './tokens.css';
+@import './components.css';
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--cobalto);
+  font: var(--text-corpo);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: lining-nums; /* Cormorant tem algarismos antigos por padrão (16Hoo) */
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+a:hover { color: var(--cobalto-escuro); }
+p { margin: 0 0 1em; text-wrap: pretty; }
+h1, h2, h3 { margin: 0; font-weight: 400; text-wrap: balance; }
+
+[hidden] { display: none !important; }
+:focus-visible { outline: var(--weight-strong) solid var(--cobalto); outline-offset: 3px; }
+
+/* Layout */
+.wrap { width: min(100% - 2 * var(--spacing-m), 1080px); margin-inline: auto; }
+.narrow { width: min(100% - 2 * var(--spacing-m), 640px); margin-inline: auto; }
+.center { text-align: center; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Seções: muito respiro (spacing-5xl no desktop, 3xl no mobile), alternando papel e esmalte */
+.secao { padding-block: var(--spacing-5xl); background: var(--papel); }
+.secao--esmalte { background: var(--esmalte); }
+@media (max-width: 700px) { .secao { padding-block: var(--spacing-3xl); } }
+.secao > .lb-titulo { margin-bottom: var(--spacing-2xl); padding-inline: var(--spacing-m); }
+
+/* Utilitários de texto do DS */
+.sobretitulo { font: var(--text-sobretitulo); letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalto-suave); margin: 0; }
+.destaque { font: var(--text-destaque); }
+.legenda { font: var(--text-legenda); color: var(--cobalto-suave); }
+
+/* Mensagens de formulário */
+.aviso {
+  padding: var(--spacing-l); border: var(--weight-medium) solid var(--cobalto);
+  border-radius: var(--radius-card); background: var(--porcelana); text-align: center;
+  font: var(--text-destaque); margin: 0;
+}
+.aviso--suave { border: var(--weight-weak) solid var(--cobalto-linha); background: var(--papel-claro); font: var(--text-legenda); color: var(--cobalto-suave); }
+.erro { color: var(--tijolo); font: var(--text-legenda); margin: 0; }
+
+/* Revelar ao rolar */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.9s ease, transform 0.9s ease; }
+.reveal.is-visible { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+
+/* site: concha/ilustração vetorial dentro de componentes do DS (Art.astro pinta em currentColor) */
+.lb-titulo__concha.art, .lb-cartao__concha.art { color: var(--cobalto); }
+.lb-ornamento .art { width: 72px; flex: none; }
+.lb-btn__concha .art { width: 16px; color: var(--cobalto); }
+
+/* site: o miolo do Hero escala com o painel (no mobile o painel tem ~360px) */
+.lb-hero { container-type: inline-size; width: 100%; }
+.lb-hero__arte { position: absolute; inset: 3%; color: var(--cobalto); }
+.lb-hero .lb-hero__conteudo { padding: 35% 21% 22%; }
+.lb-hero .lb-hero__sobre { font-size: max(8px, 1.9cqw); letter-spacing: 0.2em; }
+.lb-hero .lb-hero__nomes { font-size: clamp(30px, 9.2cqw, 72px); }
+.lb-hero .lb-hero__data { font-size: clamp(26px, 7cqw, 52px); }
+/* No celular o miolo é estreito demais para o botão: ele sai do painel (ver Hero.astro) */
+.hero__cta-fora { display: none; }
+@media (max-width: 560px) {
+  .lb-hero .lb-hero__sobre { letter-spacing: 0.12em; }
+  .lb-hero .lb-hero__conteudo .lb-btn { display: none; }
+  .hero__cta-fora { display: inline-flex; }
+}
+
+/* site: botão menor para a navegação */
+.lb-btn--compacto { min-height: 40px; padding: 8px 20px; font-size: 12px; }
+/* site: filtro selecionado */
+.lb-btn--secundario[aria-pressed='true'] { border-color: var(--cobalto); background: var(--porcelana); }
+/* site: texto longo nos cartões não encosta na borda */
+.lb-cartao__texto { padding-inline: var(--spacing-l); }

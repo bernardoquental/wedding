@@ -1,0 +1,17 @@
+---
+/** CartaoEvento (DS): nicho com topo em arco e barra de cercadura no pé. */
+import Art from './Art.astro';
+
+interface Props { meta: string; title: string; time?: string; text?: string; action?: { href: string; label: string } }
+const { meta, title, time, text, action } = Astro.props;
+---
+<article class="lb-cartao reveal">
+  <Art name="concha" class="lb-cartao__concha" />
+  <p class="lb-cartao__meta">{meta}</p>
+  <h3 class="lb-cartao__titulo">{title}</h3>
+  {time && <p class="lb-cartao__hora">{time}</p>}
+  {text && <p class="lb-cartao__texto">{text}</p>}
+  <slot />
+  {action && <a class="lb-acao" href={action.href} target="_blank" rel="noopener">{action.label}</a>}
+  <div class="lb-cartao__barra"></div>
+</article>

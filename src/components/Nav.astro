@@ -1,0 +1,96 @@
+---
+import { t, languages, route, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  routeKey: RouteKey;
+}
+const { lang, routeKey } = Astro.props;
+const d = t(lang);
+const home = (hash: string) => route('home', lang, hash);
+const links = [
+  { href: home('#historia'), label: d.nav.story },
+  { href: home('#casamento'), label: d.nav.events },
+  { href: home('#programacao'), label: d.nav.schedule },
+  { href: home('#hospedagem'), label: d.nav.travel },
+  { href: home('#perguntas'), label: d.nav.faq },
+  { href: route('gifts', lang), label: d.nav.gifts },
+];
+---
+<header class="nav">
+  <div class="nav__inner">
+    <a class="nav__mono" href={route('home', lang)} aria-label="Luiza & Bernardo">L&amp;B</a>
+    <button class="nav__toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+      <span class="nav__open">{d.nav.menu}</span><span class="nav__close">{d.nav.close}</span>
+    </button>
+    <nav id="nav-menu" class="nav__menu" aria-label="Menu">
+      <ul class="nav__links">
+        {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+      </ul>
+      <a class="lb-btn lb-btn--secundario lb-btn--compacto" href={home('#rsvp')}>{d.nav.rsvp}</a>
+      <ul class="nav__langs" aria-label="Idioma / Language / Idioma">
+        {(Object.keys(languages) as Lang[]).map((l) => (
+          <li>
+            <a href={route(routeKey, l)} hreflang={l} lang={l} aria-current={l === lang ? 'true' : undefined} title={languages[l]}>
+              {l.toUpperCase()}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const nav = document.querySelector<HTMLElement>('.nav')!;
+  const toggle = nav.querySelector<HTMLButtonElement>('.nav__toggle')!;
+  const setOpen = (open: boolean) => {
+    nav.classList.toggle('is-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+  toggle.addEventListener('click', () => setOpen(!nav.classList.contains('is-open')));
+  nav.querySelectorAll('.nav__menu a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  const onScroll = () => nav.classList.toggle('is-scrolled', window.scrollY > 24);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<style>
+  .nav {
+    position: sticky; top: 0; z-index: 20; background: var(--papel);
+    border-bottom: var(--weight-weak) solid transparent; transition: border-color 0.3s;
+  }
+  .nav.is-scrolled, .nav.is-open { border-bottom-color: var(--cobalto-nevoa); }
+  .nav__inner {
+    width: min(100% - 2 * var(--spacing-m), 1280px); margin-inline: auto;
+    display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-l); min-height: 72px;
+  }
+  .nav__mono { font: 400 40px/1 var(--font-script); text-decoration: none; color: var(--cobalto); padding-top: 4px; }
+  .nav__menu { display: flex; align-items: center; gap: var(--spacing-l); }
+  .nav ul { display: flex; gap: var(--spacing-l); list-style: none; margin: 0; padding: 0; }
+  .nav__links a { font: var(--text-rotulo); letter-spacing: 0.06em; text-decoration: none; color: var(--cobalto); }
+  .nav__links a:hover { color: var(--cobalto-escuro); text-decoration: underline; }
+  .nav__langs { gap: var(--spacing-xsm) !important; }
+  .nav__langs a { font: var(--text-legenda); font-weight: 600; letter-spacing: 0.1em; color: var(--cobalto-suave); text-decoration: none; padding: 4px; }
+  .nav__langs a[aria-current] { color: var(--cobalto); text-decoration: underline; }
+  .nav__toggle {
+    display: none; background: none; cursor: pointer; color: var(--cobalto);
+    font: var(--text-botao); letter-spacing: 0.16em; text-transform: uppercase;
+    border: var(--weight-medium) solid var(--cobalto-linha); border-radius: var(--pill); padding: 10px 18px;
+  }
+  .nav__close { display: none; }
+
+  @media (max-width: 1040px) {
+    .nav__toggle { display: block; }
+    .nav.is-open .nav__open { display: none; }
+    .nav.is-open .nav__close { display: inline; }
+    .nav__menu {
+      display: none; position: fixed; inset: 72px 0 0; background: var(--papel);
+      flex-direction: column; justify-content: center; gap: var(--spacing-xl); padding: var(--spacing-l); overflow-y: auto;
+    }
+    .nav.is-open .nav__menu { display: flex; }
+    .nav__links { flex-direction: column; align-items: center; gap: var(--spacing-l) !important; }
+    .nav__links a { font: var(--text-titulo); letter-spacing: 0; }
+  }
+</style>

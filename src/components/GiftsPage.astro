@@ -1,0 +1,299 @@
+---
+/**
+ * Lista de presentes: FitaTitulo no topo, presentes como CartaoEvento,
+ * modal de Pix com os componentes do design system.
+ */
+import Base from '../layouts/Base.astro';
+import Art from './Art.astro';
+import FitaTitulo from './FitaTitulo.astro';
+import Ornamento from './Ornamento.astro';
+import BarraAzulejo from './BarraAzulejo.astro';
+import { gifts, categories } from '../data/gifts';
+import { config } from '../config';
+import { t, route, formatBRL, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+const g = d.gifts;
+const usedCats = [...new Set(gifts.map((x) => x.category))];
+const strings = {
+  copy: g.copy, copied: g.copied, thanks: g.thanks,
+  error: d.rsvp.error, nameError: d.rsvp.fullNameError, demo: d.rsvp.demo,
+};
+const pix = { key: config.pix.key, merchantName: config.pix.merchantName, merchantCity: config.pix.merchantCity };
+---
+<Base lang={lang} routeKey="gifts" title={g.title}>
+  <section class="secao presentes-topo">
+    <FitaTitulo text={g.ribbon} />
+    <header class="lb-titulo">
+      <p class="lb-titulo__sobre">{g.kicker}</p>
+      <h2 class="lb-titulo__texto">{g.title}</h2>
+      <p class="lb-titulo__lead">{g.intro}</p>
+    </header>
+  </section>
+
+  <BarraAzulejo fina />
+
+  <section class="secao secao--esmalte" aria-label={g.title}>
+    <div class="wrap">
+      <div class="filtros" role="group" aria-label={g.filterLabel}>
+        <button class="lb-btn lb-btn--secundario lb-btn--compacto" type="button" data-filter="" aria-pressed="true">{g.filterAll}</button>
+        {usedCats.map((c) => (
+          <button class="lb-btn lb-btn--secundario lb-btn--compacto" type="button" data-filter={c} aria-pressed="false">
+            {categories[c]?.[lang] ?? c}
+          </button>
+        ))}
+      </div>
+
+      <ul class="grade">
+        {gifts.map((gift) => (
+          <li class="lb-cartao presente reveal" data-category={gift.category}>
+            <Art name="concha" class="lb-cartao__concha" />
+            <p class="lb-cartao__meta">{(categories[gift.category]?.[lang] ?? gift.category).toUpperCase()}</p>
+            <h3 class="lb-cartao__titulo">{gift.name[lang]}</h3>
+            <p class="lb-cartao__hora presente__preco">{formatBRL(gift.price, lang)}</p>
+            <p class="lb-cartao__texto">{gift.description[lang]}</p>
+            <button class="lb-btn lb-btn--secundario" type="button"
+              data-gift={gift.id} data-name={gift.name[lang]} data-price={gift.price}
+              data-label={formatBRL(gift.price, lang)} data-stripe={gift.stripeUrl ?? ''}>
+              {g.give}
+            </button>
+            <div class="lb-cartao__barra"></div>
+          </li>
+        ))}
+        <li class="lb-cartao presente presente--livre reveal" data-category="">
+          <Art name="concha" class="lb-cartao__concha" />
+          <p class="lb-cartao__meta">{g.customMeta}</p>
+          <h3 class="lb-cartao__titulo">{g.custom}</h3>
+          <p class="lb-cartao__hora presente__preco">R$</p>
+          <p class="lb-cartao__texto">{g.customText}</p>
+          <button class="lb-btn lb-btn--secundario" type="button" data-gift="valor-livre" data-name={g.custom}
+            data-price="0" data-label="" data-stripe={config.stripeOpenAmountUrl}>
+            {g.give}
+          </button>
+          <div class="lb-cartao__barra"></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="secao obrigado" aria-label={g.thanksTitle}>
+    <div class="obrigado__linha">
+      <Art name="querubim-esquerdo" class="obrigado__querubim" />
+      <p class="obrigado__texto">{g.thanksTitle}</p>
+      <Art name="querubim-direito" class="obrigado__querubim" />
+    </div>
+    <p class="center"><a class="lb-acao" href={route('home', lang, '#rsvp')}>{d.hero.cta}</a></p>
+  </section>
+
+  <dialog class="pix" aria-labelledby="pix-titulo" data-strings={JSON.stringify(strings)} data-pix={JSON.stringify(pix)}>
+    <form method="dialog" class="pix__fechar-form"><button class="pix__fechar" aria-label={d.nav.close}>×</button></form>
+    <p class="lb-titulo__sobre pix__presente"></p>
+    <h2 id="pix-titulo" class="pix__titulo">{g.pixTitle}</h2>
+    <Ornamento class="pix__ornamento" />
+
+    <label class="lb-campo pix__valor">
+      <span class="lb-campo__rotulo">{g.amount}</span>
+      <input class="lb-campo__input" type="number" min="1" step="1" inputmode="numeric" name="amount" />
+    </label>
+    <div class="pix__qr" aria-hidden="true"></div>
+    <p class="legenda pix__passos">{g.pixSteps}</p>
+    <textarea class="lb-campo__input pix__codigo" readonly rows="3" aria-label="Pix copia e cola"></textarea>
+    <button class="lb-btn lb-btn--primario pix__copiar" type="button">{g.copy}</button>
+    <p class="pix__cartao" hidden>
+      <a class="lb-acao pix__cartao-link" target="_blank" rel="noopener">{g.card}</a>
+      <span class="legenda">{g.cardNote}</span>
+    </p>
+
+    <form class="pix__recado" novalidate>
+      <p class="lb-titulo__sobre">{g.messageTitle.toUpperCase()}</p>
+      <p class="legenda">{g.messageIntro}</p>
+      <label class="lb-campo pix__nome">
+        <span class="lb-campo__rotulo">{g.name}</span>
+        <input class="lb-campo__input" name="fullName" autocomplete="name" />
+        <span class="lb-campo__ajuda" hidden></span>
+      </label>
+      <label class="lb-campo">
+        <span class="lb-campo__rotulo">{g.message}</span>
+        <textarea class="lb-campo__input" name="message" rows="3"></textarea>
+      </label>
+      <label class="visually-hidden" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off" /></label>
+      <button class="lb-btn lb-btn--secundario" type="submit">{g.send}</button>
+      <div class="pix__status" role="status" aria-live="polite"></div>
+    </form>
+  </dialog>
+</Base>
+
+<script>
+  import QRCode from 'qrcode';
+  import { pixPayload } from '../lib/pix';
+  import { send } from '../lib/api';
+  import { isFullName } from '../lib/validate';
+
+  const dialog = document.querySelector<HTMLDialogElement>('dialog.pix')!;
+  const s = JSON.parse(dialog.dataset.strings!);
+  const pix = JSON.parse(dialog.dataset.pix!);
+  const $ = <T extends Element = HTMLElement>(sel: string) => dialog.querySelector<T>(sel)!;
+  const amountField = $('.pix__valor');
+  const amountInput = $<HTMLInputElement>('[name=amount]');
+  const code = $<HTMLTextAreaElement>('.pix__codigo');
+  const copyBtn = $<HTMLButtonElement>('.pix__copiar');
+  const msgForm = $<HTMLFormElement>('.pix__recado');
+  let current = { id: '', name: '', price: 0 };
+
+  async function render() {
+    const amount = current.price || Number(amountInput.value) || 0;
+    const payload = pixPayload({ ...pix, amount, txid: current.id.replace(/[^A-Za-z0-9]/g, '').slice(0, 25) });
+    code.value = payload;
+    // QR em azul-profundo sobre branco: contraste alto para a câmera do banco
+    $('.pix__qr').innerHTML = await QRCode.toString(payload, {
+      type: 'svg', margin: 1, errorCorrectionLevel: 'M',
+      color: { dark: '#262f7a', light: '#ffffff' },
+    });
+  }
+
+  // Filtros
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  filterBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      filterBtns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      document.querySelectorAll<HTMLElement>('.presente').forEach((li) => {
+        li.hidden = !!b.dataset.filter && li.dataset.category !== b.dataset.filter && !li.classList.contains('presente--livre');
+      });
+    }),
+  );
+
+  // Abrir o modal
+  document.querySelectorAll<HTMLButtonElement>('[data-gift]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      current = { id: b.dataset.gift!, name: b.dataset.name!, price: Number(b.dataset.price) };
+      $('.pix__presente').textContent = (current.price ? `${current.name} · ${b.dataset.label}` : current.name).toUpperCase();
+      amountField.hidden = current.price > 0;
+      amountInput.value = '';
+      const stripe = b.dataset.stripe;
+      $('.pix__cartao').hidden = !stripe;
+      if (stripe) $<HTMLAnchorElement>('.pix__cartao-link').href = stripe;
+      $('.pix__status').replaceChildren();
+      msgForm.querySelectorAll<HTMLElement>('.lb-campo, button').forEach((n) => (n.hidden = false));
+      copyBtn.textContent = s.copy;
+      await render();
+      dialog.showModal();
+    }),
+  );
+  amountInput.addEventListener('input', render);
+  dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+
+  copyBtn.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(code.value);
+    } catch {
+      code.select();
+      document.execCommand('copy');
+    }
+    copyBtn.textContent = s.copied;
+    setTimeout(() => (copyBtn.textContent = s.copy), 2500);
+  });
+
+  // Recado depois do pagamento
+  msgForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(msgForm);
+    const fullName = String(fd.get('fullName') ?? '').trim();
+    const field = $('.pix__nome');
+    const help = field.querySelector<HTMLElement>('.lb-campo__ajuda')!;
+    const ok = isFullName(fullName);
+    field.classList.toggle('lb-campo--erro', !ok);
+    help.hidden = ok;
+    help.textContent = ok ? '' : s.nameError;
+    field.querySelector('input')!.setAttribute('aria-invalid', String(!ok));
+    if (!ok) return;
+    const btn = msgForm.querySelector<HTMLButtonElement>('button')!;
+    btn.disabled = true;
+    const status = $('.pix__status');
+    try {
+      const res = await send('gift_message', {
+        fullName,
+        message: String(fd.get('message') ?? ''),
+        giftId: current.id,
+        giftName: current.name,
+        amount: current.price || Number(amountInput.value) || 0,
+        website: String(fd.get('website') ?? ''),
+      });
+      if (!res.ok) throw new Error(res.error);
+      msgForm.querySelectorAll<HTMLElement>('.lb-campo, button').forEach((n) => (n.hidden = true));
+      const p = document.createElement('p');
+      p.className = 'aviso';
+      p.textContent = s.thanks;
+      status.replaceChildren(p);
+      if (res.demo) {
+        const demo = document.createElement('p');
+        demo.className = 'aviso aviso--suave';
+        demo.textContent = s.demo;
+        status.append(demo);
+      }
+      msgForm.reset();
+    } catch (err) {
+      console.error(err);
+      const p = document.createElement('p');
+      p.className = 'erro';
+      p.textContent = s.error;
+      status.replaceChildren(p);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+</script>
+
+<style>
+  .presentes-topo { display: grid; gap: var(--spacing-xl); padding-inline: var(--spacing-m); }
+  .presentes-topo :global(.lb-fita) { width: min(100%, 560px); margin: 0 auto; }
+
+  .filtros { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-xsm); margin-bottom: var(--spacing-2xl); }
+
+  .grade {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; gap: var(--spacing-l); justify-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 300px));
+  }
+  .presente { background: var(--papel); }
+  .presente__preco { font-variant-numeric: lining-nums; }
+  .presente .lb-btn { margin-top: var(--spacing-xsm); }
+
+  .obrigado__linha { display: flex; align-items: center; justify-content: center; gap: clamp(8px, 3vw, 40px); }
+  .obrigado :global(.obrigado__querubim) { width: clamp(90px, 18vw, 200px); color: var(--cobalto); }
+  .obrigado__texto { font: 400 clamp(44px, 8vw, 88px)/1 var(--font-script); margin: 0; }
+
+  .pix {
+    width: min(100% - 32px, 480px); max-height: calc(100dvh - 32px);
+    padding: var(--spacing-2xl) var(--spacing-xl) var(--spacing-xl);
+    border: var(--weight-weak) solid var(--cobalto-linha); border-radius: var(--radius-card);
+    background: var(--papel); color: var(--cobalto); text-align: center;
+  }
+  .pix::backdrop { background: color-mix(in srgb, var(--azul-profundo) 45%, transparent); }
+  .pix > * + * { margin-top: var(--spacing-m); }
+  .pix__fechar-form { position: absolute; top: 10px; right: 12px; margin: 0; }
+  .pix__fechar {
+    background: none; border: 0; color: var(--cobalto); cursor: pointer;
+    font: 300 32px/1 var(--font-sans); padding: 6px 10px; border-radius: var(--pill);
+  }
+  .pix__fechar:focus-visible { outline: var(--weight-strong) solid var(--cobalto); outline-offset: 3px; }
+  .pix__titulo { font: var(--text-titulo); }
+  .pix :global(.pix__ornamento) { width: 200px; margin-inline: auto; }
+  .pix :global(.pix__ornamento .art) { width: 44px; }
+  .pix__valor { text-align: left; }
+  .pix__qr {
+    width: 216px; margin-inline: auto; padding: 8px; background: var(--papel-claro);
+    border: var(--weight-weak) solid var(--cobalto-linha); border-radius: var(--radius-field);
+  }
+  .pix__codigo { width: 100%; font: 12px/1.5 ui-monospace, monospace; word-break: break-all; resize: none; }
+  .pix__copiar { width: 100%; }
+  .pix__cartao { display: grid; justify-items: center; gap: var(--spacing-xsm); }
+  .pix__recado {
+    display: grid; gap: var(--spacing-l); text-align: left;
+    margin-top: var(--spacing-xl); padding-top: var(--spacing-xl); border-top: var(--weight-weak) solid var(--cobalto-nevoa);
+  }
+  .pix__recado > p { text-align: center; margin: 0; }
+  .pix__recado .lb-btn { width: 100%; }
+  .pix__status { display: grid; gap: var(--spacing-m); }
+</style>

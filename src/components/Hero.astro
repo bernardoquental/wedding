@@ -1,0 +1,72 @@
+---
+/**
+ * Hero (DS): a ilustração do convite sobre um painel de azulejos com juntas,
+ * emoldurado em lioz. A arte é o vetor moldura.svg (equivalente ao frame.png do DS).
+ */
+import Art from './Art.astro';
+import { config } from '../config';
+import { t, route, type Lang } from '../i18n';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const d = t(lang);
+---
+<div class="hero">
+  <section class="lb-hero lb-juntas" aria-label="Luiza & Bernardo — 20.03.27">
+    <Art name="moldura" class="lb-hero__arte" />
+    <div class="lb-hero__conteudo">
+      <p class="lb-hero__sobre">SANTA TERESA · RIO DE JANEIRO</p>
+      <h1 class="lb-hero__nomes">Luiza &amp; Bernardo</h1>
+      <p class="lb-hero__data" aria-label={d.hero.dateLong}>20.03.27</p>
+      <a class="lb-btn lb-btn--primario" href={route('home', lang, '#rsvp')}>
+        <span class="lb-btn__concha"><Art name="concha" /></span>{d.hero.cta}
+      </a>
+    </div>
+  </section>
+
+  <a class="lb-btn lb-btn--primario hero__cta-fora" href={route('home', lang, '#rsvp')}>
+    <span class="lb-btn__concha"><Art name="concha" /></span>{d.hero.cta}
+  </a>
+  <p class="hero__data-extenso destaque">{d.hero.dateLong}</p>
+  <div class="hero__contagem" data-date={config.date} aria-label={d.hero.countdownLabel}>
+    {(['days', 'hours', 'minutes', 'seconds'] as const).map((k) => (
+      <div><strong data-unit={k}>–</strong><span class="sobretitulo">{d.hero.countdown[k]}</span></div>
+    ))}
+  </div>
+</div>
+
+<script>
+  const el = document.querySelector<HTMLElement>('.hero__contagem');
+  if (el) {
+    const target = new Date(el.dataset.date!).getTime();
+    const units = { days: 86400000, hours: 3600000, minutes: 60000, seconds: 1000 } as const;
+    const tick = () => {
+      let diff = Math.max(0, target - Date.now());
+      for (const [k, ms] of Object.entries(units)) {
+        const v = Math.floor(diff / ms);
+        diff -= v * ms;
+        el.querySelector(`[data-unit="${k}"]`)!.textContent = k === 'days' ? String(v) : String(v).padStart(2, '0');
+      }
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+</script>
+
+<style>
+  .hero {
+    display: grid; justify-items: center; gap: var(--spacing-l);
+    padding: var(--spacing-l) var(--spacing-m) var(--spacing-3xl);
+  }
+  .hero .lb-hero { max-width: min(640px, calc((100svh - 120px) * 0.7136)); }
+  .hero__data-extenso { margin: var(--spacing-xsm) 0 0; font-style: italic; text-align: center; }
+  .hero__contagem { display: flex; gap: var(--spacing-l); text-align: center; }
+  .hero__contagem div { display: grid; gap: var(--spacing-2xsm); }
+  .hero__contagem strong { font: var(--text-titulo); font-variant-numeric: lining-nums tabular-nums; }
+
+  /* Entrada suave do painel */
+  .hero .lb-hero { animation: surgir 1.2s cubic-bezier(.2, .7, .2, 1) both; }
+  .hero .lb-hero__conteudo { animation: surgir 1.2s 0.4s cubic-bezier(.2, .7, .2, 1) both; }
+  @keyframes surgir { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { .hero .lb-hero, .hero .lb-hero__conteudo { animation: none; } }
+</style>

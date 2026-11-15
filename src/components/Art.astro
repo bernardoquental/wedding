@@ -1,0 +1,36 @@
+---
+/**
+ * Ilustração vetorizada (public/art/<name>.svg) pintada com a cor do texto.
+ * Usa CSS mask: o arquivo fica em cache e a cor vem de `color` (var(--ink) por padrão).
+ */
+import { readFileSync } from 'node:fs';
+import { url } from '../i18n';
+
+interface Props {
+  name: string;
+  class?: string;
+  style?: string;
+  /** Texto alternativo; sem ele a imagem é decorativa. */
+  label?: string;
+}
+const { name, class: className = '', style = '', label } = Astro.props;
+const svg = readFileSync(`public/art/${name}.svg`, 'utf8');
+const [, , w, h] = svg.match(/viewBox="([^"]+)"/)![1].split(' ').map(Number);
+const src = url(`/art/${name}.svg`);
+---
+<span
+  class:list={['art', className]}
+  style={`--src:url('${src}');aspect-ratio:${w}/${h};${style}`}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+></span>
+
+<style>
+  .art {
+    display: block;
+    background-color: currentColor;
+    -webkit-mask: var(--src) center / contain no-repeat;
+    mask: var(--src) center / contain no-repeat;
+  }
+</style>

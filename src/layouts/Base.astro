@@ -1,0 +1,83 @@
+---
+import '../styles/global.css';
+import Nav from '../components/Nav.astro';
+import BarraAzulejo from '../components/BarraAzulejo.astro';
+import Art from '../components/Art.astro';
+import { t, languages, route, url, type Lang, type RouteKey } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  routeKey: RouteKey;
+  title?: string;
+}
+const { lang, routeKey, title } = Astro.props;
+const d = t(lang);
+const pageTitle = title ? `${title} · ${d.meta.title}` : d.meta.title;
+const ogImage = new URL(url('/og.jpg'), Astro.site).href;
+// Azulejos do DS (assets/Azulejo), usados por BarraAzulejo e CartaoEvento
+const tiles = `--padrao:url('${url('/azulejo/padrao.svg')}');--cercadura:url('${url('/azulejo/cercadura.svg')}')`;
+---
+<!doctype html>
+<html lang={lang === 'pt' ? 'pt-BR' : lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={d.meta.description} />
+    <meta name="theme-color" content="#fdfcf7" />
+    <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={d.meta.description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:type" content="website" />
+    {(Object.keys(languages) as Lang[]).map((l) => (
+      <link rel="alternate" hreflang={l} href={new URL(route(routeKey, l), Astro.site).href} />
+    ))}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap"
+    />
+  </head>
+  <body style={tiles}>
+    <a class="visually-hidden" href="#main">{d.nav.skip}</a>
+    <Nav lang={lang} routeKey={routeKey} />
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="rodape">
+      <BarraAzulejo />
+      <div class="rodape__miolo">
+        <div class="rodape__fita" role="img" aria-label="Luiza & Bernardo">
+          <Art name="faixa" />
+          <Art name="lettering-nomes" class="rodape__nomes" />
+        </div>
+        <p class="sobretitulo">{d.footer.place}</p>
+        <p class="legenda">{d.footer.made}</p>
+      </div>
+    </footer>
+    <script>
+      // Revela elementos .reveal ao entrarem na tela
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-visible');
+              io.unobserve(e.target);
+            }
+          }),
+        { rootMargin: '0px 0px -10% 0px' },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+  </body>
+</html>
+
+<style>
+  .rodape { background: var(--papel); }
+  .rodape__miolo { display: grid; justify-items: center; gap: var(--spacing-m); text-align: center; padding: var(--spacing-3xl) var(--spacing-m) var(--spacing-2xl); }
+  /* Fita com os nomes: recompõe ribbon-names.png com os vetores (posições da arte original 1427×2000) */
+  .rodape__fita { position: relative; width: min(100%, 420px); color: var(--cobalto); margin-bottom: var(--spacing-xsm); }
+  .rodape__fita :global(.rodape__nomes) { position: absolute; left: 12.17%; top: 8.06%; width: 73.03%; }
+</style>
