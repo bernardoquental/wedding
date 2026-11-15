@@ -1,0 +1,6 @@
+---
+/** Ornamento (DS): a concha entre dois filetes. */
+import Art from './Art.astro';
+interface Props { class?: string }
+---
+<div class:list={['lb-ornamento', Astro.props.class]} aria-hidden="true"><Art name="concha" /></div>

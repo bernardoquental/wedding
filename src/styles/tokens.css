@@ -1,0 +1,149 @@
+/*
+ * Tokens do design system "Luiza & Bernardo"
+ * Fonte: https://claude.ai/artifact/NYweRMNvz93NoXQmLLhSgV (project/tokens.css, gerado de tokens.json).
+ * Copiado sem alterações, exceto: sem @font-face (as fontes vêm do Google Fonts no Base.astro)
+ * e com o bloco de aliases no fim, para as variáveis que o bundle.css usa e o tokens.css não define.
+ */
+:root, [data-theme="papel"] {
+  --papel: #fdfcf7; /* Fundo de página: o branco de cal das paredes da igreja. `cobalto` 6,37:1, `cobalto-suave` 5,23:1, `azul-profundo` 11,55:1. */
+  --esmalte: #f4f3ec; /* O branco do vidrado do azulejo: painéis de azulejo, faixas de seção alternadas e cartões de evento. `cobalto` 5,88:1, `cobalto-suave` 4,83:1. */
+  --papel-claro: #ffffff; /* Campos de formulário e opções sobre `papel` ou `esmalte`. `cobalto` 6,54:1. */
+  --lioz: #e9e2d5; /* A pedra lioz que emoldura os painéis: molduras de `PainelAzulejo`, soleiras e faixas estruturais. `cobalto` 5,08:1 e `azul-profundo` 9,21:1 sobre ela; `cobalto-suave` NÃO (4,17:1). */
+  --lioz-escuro: #6f6250; /* Filete de moldura na pedra (a cantaria). Também serve a texto pequeno sobre `lioz` (4,61:1), com parcimônia. */
+  --porcelana: #eceefa; /* Aguada clara do azul: opção selecionada e realces suaves. `cobalto` 5,66:1, `cobalto-suave` 4,65:1. */
+  --azul-profundo: #262f7a; /* O azul mais carregado do azulejo: botão primário, contornos fortes, blocos de cor. 11,55:1 sobre `papel`. */
+  --cobalto: #4a54b3; /* A tinta da ilustração do convite: títulos, texto, ilustração, borda de seleção e anel de foco. */
+  --cobalto-escuro: #1c2364; /* Hover e pressionado do botão primário e dos links. 13,87:1 sobre `papel`. */
+  --cobalto-suave: #5a63b8; /* Texto secundário: descrições, ajuda de campo, horários. Mínimo 4,65:1 em `papel`, `esmalte`, `papel-claro` e `porcelana`. */
+  --cobalto-linha: #7d84c6; /* Borda de campos, opções e botão secundário em repouso. Mínimo 3,04:1 nos fundos claros (não sobre `lioz`). */
+  --cobalto-nevoa: #a1a6d6; /* Aguada média e filetes decorativos: juntas de azulejo, divisores, quartos de círculo. 2,29:1: nunca para texto, ícone ou borda de controle. */
+  --sobre-cobalto: var(--papel); /* Texto sobre `azul-profundo`, `cobalto` ou `cobalto-escuro` (botões): 11,55:1, 6,37:1 e 13,87:1. */
+  --marmore: #c08367; /* O mármore rosado da pia em concha: acento raríssimo, só decorativo (miolo da rosácea na programação, selo do RSVP). 3,06:1: nunca em texto. */
+  --tijolo: #a33a2c; /* Erro de validação: mensagem e borda do campo, sempre com texto explicando como corrigir. 6,39:1 sobre `papel`. */
+}
+:root {
+  --spacing-2xsm: 4px; /* Ajustes finos, gap entre ícone e texto. */
+  --spacing-xsm: 8px; /* Gap entre rótulo e campo; entre sobretítulo e título. */
+  --spacing-sm: 12px; /* Padding vertical de campos. */
+  --spacing-m: 16px; /* Gap entre opções; margem lateral no mobile. */
+  --spacing-l: 24px; /* Padding horizontal de campos; gap entre título e ornamento. */
+  --spacing-xl: 32px; /* Padding horizontal de botões; padding de cartões; gap entre campos. */
+  --spacing-2xl: 48px; /* Respiro entre blocos dentro de uma seção; entre itens da programação. */
+  --spacing-3xl: 64px; /* Padding vertical de seção no mobile. */
+  --spacing-4xl: 80px; /* Lado de um azulejo nas juntas desenhadas (Hero, PainelAzulejo) e altura da BarraAzulejo. Os padrões em `assets/Azulejo` repetem a 160px, dois módulos. */
+  --spacing-5xl: 120px; /* Padding vertical de seção no desktop. As referências respiram muito: não economize aqui. */
+  --radius-field: 10px; /* Campos de texto e selects. */
+  --radius-card: 20px; /* Cartões, opções de presença e cantos inferiores do cartão em arco. */
+  --radius-arch: 240px; /* Topo em arco do `CartaoEvento` e de molduras de foto: ecoa a concha e os arcos da ilustração. */
+  --pill: 9999px; /* Botões (pílula), marcadores de radio e pontos da programação. */
+  --weight-weak: 1px; /* Bordas de campo, opções em repouso, filetes e divisores. */
+  --weight-medium: 1.5px; /* Borda de opção selecionada e do botão secundário. */
+  --weight-strong: 2px; /* Anel de foco e campo com erro. */
+  --font-script: "Alex Brush", "Brush Script MT", cursive;
+  --font-serif: "Cormorant Garamond", Cormorant, Garamond, Georgia, serif;
+  --font-sans: Manrope, "Helvetica Neue", Arial, sans-serif;
+  --font-cormorant-garamond-variable-font-wght: var(--font-serif); /* site: Cormorant Garamond do Google Fonts */
+  --font-inter: var(--font-sans); /* site: o README do DS define Manrope como sans */
+  --text-script-nomes: 400 88px/1 var(--font-script); /* Nomes do casal no hero, na fita e no rodapé. Uma vez por tela. */
+  --text-script-data: 400 60px/1.05 var(--font-script); /* A data no formato do convite, no hero. */
+  --text-display: 400 56px/1.05 var(--font-cormorant-garamond-variable-font-wght); /* Título de seção, centralizado, no máximo duas linhas. No mobile, 40px. */
+  --text-titulo: 500 32px/1.15 var(--font-cormorant-garamond-variable-font-wght); /* Nome de evento, item da programação e título de cartão. */
+  --text-destaque: 400 22px/1.45 var(--font-cormorant-garamond-variable-font-wght); /* Parágrafo de abertura de seção, centralizado, até 560px de largura. */
+  --text-sobretitulo: 600 12px/16px var(--font-inter); /* Rótulo acima do título de seção e horário na programação. Texto já em maiúsculas. */
+  --text-corpo: 400 16px/26px var(--font-inter); /* Texto corrido, respostas das perguntas, descrições. */
+  --text-rotulo: 600 13px/18px var(--font-inter); /* Rótulo de campo do formulário. */
+  --text-botao: 600 13px/16px var(--font-inter); /* Texto de botões e links de ação, em maiúsculas. */
+  --text-legenda: 400 13px/20px var(--font-inter); /* Ajuda de campo e metadados, em `cobalto-suave`. */
+}
+.script-nomes {
+  font-family: var(--font-script);
+  font-size: 88px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.script-data {
+  font-family: var(--font-script);
+  font-size: 60px;
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.display {
+  font-family: var(--font-cormorant-garamond-variable-font-wght);
+  font-size: 56px;
+  line-height: 1.05;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+.titulo {
+  font-family: var(--font-cormorant-garamond-variable-font-wght);
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.destaque {
+  font-family: var(--font-cormorant-garamond-variable-font-wght);
+  font-size: 22px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.sobretitulo {
+  font-family: var(--font-inter);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+}
+.corpo {
+  font-family: var(--font-inter);
+  font-size: 16px;
+  line-height: 26px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+.rotulo {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+.botao {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+}
+.legenda {
+  font-family: var(--font-inter);
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* ---------- Aliases (site) ----------
+ * components.css (bundle.css do DS) usa estes nomes, que não existem no tokens.css.
+ */
+:root {
+  --espaco-1: var(--spacing-2xsm);  /* 4px */
+  --espaco-2: var(--spacing-xsm);   /* 8px */
+  --espaco-3: var(--spacing-sm);    /* 12px */
+  --espaco-4: var(--spacing-m);     /* 16px */
+  --espaco-6: var(--spacing-l);     /* 24px */
+  --espaco-8: var(--spacing-xl);    /* 32px */
+  --espaco-12: var(--spacing-2xl);  /* 48px */
+  --espaco-16: var(--spacing-3xl);  /* 64px */
+  --raio-campo: var(--radius-field);
+  --raio-cartao: var(--radius-card);
+  --raio-arco: var(--radius-arch);
+  --raio-total: var(--pill);
+  --traco-fino: var(--weight-weak);
+  --traco: var(--weight-medium);
+  --traco-forte: var(--weight-strong);
+  --modulo-azulejo: var(--spacing-4xl);
+}

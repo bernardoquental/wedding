@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import Nav from '../components/Nav.astro';
+import BarraAzulejo from '../components/BarraAzulejo.astro';
 import Art from '../components/Art.astro';
 import { t, languages, route, url, type Lang, type RouteKey } from '../i18n';
 
@@ -8,18 +9,13 @@ interface Props {
   lang: Lang;
   routeKey: RouteKey;
   title?: string;
-  /** Carrega todas as fontes candidatas (página de estilo). */
-  allFonts?: boolean;
-  noindex?: boolean;
 }
-const { lang, routeKey, title, allFonts = false, noindex = false } = Astro.props;
+const { lang, routeKey, title } = Astro.props;
 const d = t(lang);
 const pageTitle = title ? `${title} · ${d.meta.title}` : d.meta.title;
 const ogImage = new URL(url('/og.jpg'), Astro.site).href;
-const scripts = allFonts
-  ? ['Mrs+Saint+Delafield', 'Herr+Von+Muellerhoff', 'Italianno', 'Parisienne', 'Pinyon+Script']
-  : ['Mrs+Saint+Delafield'];
-const fontsHref = `https://fonts.googleapis.com/css2?${scripts.map((f) => `family=${f}`).join('&')}&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap`;
+// Azulejos do DS (assets/Azulejo), usados por BarraAzulejo e CartaoEvento
+const tiles = `--padrao:url('${url('/azulejo/padrao.svg')}');--cercadura:url('${url('/azulejo/cercadura.svg')}')`;
 ---
 <!doctype html>
 <html lang={lang === 'pt' ? 'pt-BR' : lang}>
@@ -28,8 +24,7 @@ const fontsHref = `https://fonts.googleapis.com/css2?${scripts.map((f) => `famil
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={d.meta.description} />
-    {noindex && <meta name="robots" content="noindex" />}
-    <meta name="theme-color" content="#fffcd6" />
+    <meta name="theme-color" content="#fdfcf7" />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={d.meta.description} />
@@ -40,19 +35,27 @@ const fontsHref = `https://fonts.googleapis.com/css2?${scripts.map((f) => `famil
     ))}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href={fontsHref} />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap"
+    />
   </head>
-  <body>
-    <a class="skip visually-hidden" href="#main">Skip</a>
+  <body style={tiles}>
+    <a class="visually-hidden" href="#main">{d.nav.skip}</a>
     <Nav lang={lang} routeKey={routeKey} />
     <main id="main">
       <slot />
     </main>
-    <footer class="footer">
-      <div class="divider"><Art name="concha" style="width:56px" /></div>
-      <p class="script footer__names">Luiza &amp; Bernardo</p>
-      <p class="caps">20 · 03 · 2027 — Santa Teresa, Rio de Janeiro</p>
-      <p class="footer__made">{d.footer.made}</p>
+    <footer class="rodape">
+      <BarraAzulejo />
+      <div class="rodape__miolo">
+        <div class="rodape__fita" role="img" aria-label="Luiza & Bernardo">
+          <Art name="faixa" />
+          <Art name="lettering-nomes" class="rodape__nomes" />
+        </div>
+        <p class="sobretitulo">{d.footer.place}</p>
+        <p class="legenda">{d.footer.made}</p>
+      </div>
     </footer>
     <script>
       // Revela elementos .reveal ao entrarem na tela
@@ -72,11 +75,9 @@ const fontsHref = `https://fonts.googleapis.com/css2?${scripts.map((f) => `famil
 </html>
 
 <style>
-  .footer {
-    text-align: center;
-    padding: 64px var(--gutter) 48px;
-    border-top: 1px solid var(--ink-faint);
-  }
-  .footer__names { font-size: var(--step-script); margin: 24px 0 12px; }
-  .footer__made { color: var(--ink-soft); font-style: italic; margin-top: 16px; }
+  .rodape { background: var(--papel); }
+  .rodape__miolo { display: grid; justify-items: center; gap: var(--spacing-m); text-align: center; padding: var(--spacing-3xl) var(--spacing-m) var(--spacing-2xl); }
+  /* Fita com os nomes: recompõe ribbon-names.png com os vetores (posições da arte original 1427×2000) */
+  .rodape__fita { position: relative; width: min(100%, 420px); color: var(--cobalto); margin-bottom: var(--spacing-xsm); }
+  .rodape__fita :global(.rodape__nomes) { position: absolute; left: 12.17%; top: 8.06%; width: 73.03%; }
 </style>

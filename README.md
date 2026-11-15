@@ -5,7 +5,7 @@ Site estático (Astro) com RSVP e lista de presentes, publicado no GitHub Pages.
 - **RSVP e recados** → Google Sheets via Apps Script ([apps-script/README.md](apps-script/README.md))
 - **Presentes** → Pix gerado no navegador (QR + copia e cola, sem taxa) e, opcionalmente, links de pagamento do Stripe
 - **Idiomas** → português (`/`), inglês (`/en/`) e espanhol (`/es/`)
-- **Guia de estilo** → `/estilo/` (cores, ilustrações, tipografia, componentes)
+- **Design system** → [Luiza & Bernardo](https://claude.ai/artifact/NYweRMNvz93NoXQmLLhSgV)
 
 ## Rodar localmente
 
@@ -20,33 +20,46 @@ npm run build
 
 | O quê | Arquivo |
 | --- | --- |
-| Data, local, chave Pix, URL do Apps Script, link Stripe de valor livre | `src/config.ts` |
+| Data, links de mapa, chave Pix, URL do Apps Script, link Stripe de valor livre | `src/config.ts` |
 | Textos (história, programação, FAQ, traje, hospedagem…) | `src/i18n/pt.ts`, `en.ts`, `es.ts` |
 | Lista de presentes (nome, valor, descrição, link Stripe) | `src/data/gifts.json` |
 | Categorias dos presentes | `src/data/gifts.ts` |
-| Cores e fontes | `src/styles/global.css` (variáveis no topo) |
+| Cores, fontes, componentes | `src/styles/tokens.css` e `components.css` (vêm do design system) |
 
 Textos marcados com `[preencher]` são placeholders.
 
-## Padrão visual e ilustrações
+## Design system
 
-A arte do save the date foi feita à mão, então as ilustrações são **vetorizadas** a partir da imagem
-(`source/save-the-date.jpg`) por `tools/vectorize.py` (Pillow + numpy + scipy + `potrace`). O script separa
-a moldura, a faixa (vazia), os letterings e recortes (concha, querubins, guirlandas, ramos) em
-`public/art/*.svg`. Os SVGs são pintados pela cor do texto via CSS mask (componente `Art.astro`).
+O visual segue o design system **Luiza & Bernardo** (artifact: https://claude.ai/artifact/NYweRMNvz93NoXQmLLhSgV):
+azul de azulejo sobre branco de cal, painéis de azulejo emoldurados em pedra lioz, curvas e conchas;
+Alex Brush (nomes e data), Cormorant Garamond (títulos) e Manrope (texto, rótulos, botões).
 
-Para melhorar a nitidez: escaneie o desenho original em alta resolução (600 dpi), salve como
-`source/save-the-date.jpg` com o mesmo enquadramento e rode:
+| Arquivo | O que é |
+| --- | --- |
+| `src/styles/tokens.css` | Cópia do `project/tokens.css` do DS (sem `@font-face`) + bloco de **aliases** no fim |
+| `src/styles/components.css` | Cópia do `project/components/bundle.css` do DS: as classes `lb-*` |
+| `src/styles/global.css` | Só o que o DS não cobre: layout, seções, utilitários e ajustes marcados `site:` |
+| `public/azulejo/` | `padrao.svg` e `cercadura.svg` do DS (`assets/Azulejo`) |
+| `src/components/` | Wrappers Astro dos componentes do DS: `Hero`, `TituloSecao`, `CartaoEvento`, `BarraAzulejo`, `Ornamento`, `FitaTitulo` |
+
+**Quando o DS mudar:** copie de novo `tokens.css` e `bundle.css` para os dois arquivos acima, mantendo o
+cabeçalho, o bloco de aliases e a remoção do `@import`/`@font-face`/`body`.
+
+Diferenças em relação ao DS, resolvidas aqui (o artifact não foi alterado):
+- o `bundle.css` usa `--espaco-*`, `--raio-*`, `--traco*` e `--modulo-azulejo`, que o `tokens.css` não define: os aliases em `tokens.css` mapeiam para `spacing-*`, `radius-*`, `weight-*`;
+- os estilos sans do `tokens.json` apontam para `Inter`, mas o README do DS usa **Manrope**: o site usa Manrope;
+- as fontes vêm do Google Fonts (os `/_blob/` do DS só existem dentro do artifact).
+
+### Ilustrações
+
+As peças do convite (moldura, concha, fita, letterings, querubins) são **vetores** gerados por
+`tools/vectorize.py` a partir de `source/save-the-date.jpg` (o original 1500×2102 do DS), equivalentes aos
+PNGs de `assets/Ilustracao` e `assets/Lettering`. Ficam em `public/art/` e são pintados em `cobalto` via
+CSS mask (`Art.astro`). Para regenerar (Pillow, numpy, scipy e `potrace`):
 
 ```bash
-pip install pillow numpy scipy && sudo apt install potrace
 npm run vectorize
 ```
-
-**Tipografia:** os letterings originais (nomes, data, local) são usados como imagem vetorial. Para títulos
-novos usa-se uma cursiva do Google Fonts (padrão: *Mrs Saint Delafield*; compare as candidatas em
-`/estilo/`) e, para o texto, *Cormorant Garamond*. Para uma fonte idêntica à letra original, preencha a
-folha-modelo do [Calligraphr](https://www.calligraphr.com) à mão e troque `--font-script`.
 
 ## Publicar no GitHub Pages
 

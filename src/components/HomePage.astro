@@ -1,8 +1,15 @@
 ---
+/**
+ * Página inicial, na estrutura do design system:
+ * Hero → História → Evento → Programação → Hospedagem → Perguntas → painel do RSVP → formulário → presentes.
+ */
 import Base from '../layouts/Base.astro';
 import Hero from './Hero.astro';
 import Art from './Art.astro';
-import SectionTitle from './SectionTitle.astro';
+import TituloSecao from './TituloSecao.astro';
+import CartaoEvento from './CartaoEvento.astro';
+import BarraAzulejo from './BarraAzulejo.astro';
+import Ornamento from './Ornamento.astro';
 import RSVPForm from './RSVPForm.astro';
 import { config } from '../config';
 import { t, route, type Lang } from '../i18n';
@@ -10,70 +17,52 @@ import { t, route, type Lang } from '../i18n';
 interface Props { lang: Lang }
 const { lang } = Astro.props;
 const d = t(lang);
+const ev = d.events;
 ---
 <Base lang={lang} routeKey="home">
   <Hero lang={lang} />
+  <BarraAzulejo fina />
 
-  <section class="section" id="historia" aria-labelledby="h-story">
-    <SectionTitle id="h-story" text={d.story.title} />
-    <div class="narrow story reveal">
+  <section class="secao" id="historia" aria-labelledby="h-historia">
+    <TituloSecao id="h-historia" kicker={d.story.kicker} text={d.story.title} lead={d.story.lead} />
+    <div class="narrow historia reveal">
       {d.story.paragraphs.map((p) => <p>{p}</p>)}
     </div>
   </section>
 
-  <section class="section" id="programacao" aria-labelledby="h-schedule">
-    <SectionTitle id="h-schedule" text={d.schedule.title} />
-    <ol class="narrow timeline">
+  <section class="secao secao--esmalte" id="casamento" aria-labelledby="h-casamento">
+    <TituloSecao id="h-casamento" kicker={ev.kicker} text={ev.title} lead={ev.lead} />
+    <div class="wrap cartoes cartoes--dois">
+      <CartaoEvento {...ev.ceremony} action={{ href: config.events.ceremony.mapsUrl, label: ev.map }} />
+      <CartaoEvento {...ev.reception} action={{ href: config.events.reception.mapsUrl, label: ev.map }} />
+    </div>
+  </section>
+
+  <section class="secao" id="programacao" aria-labelledby="h-programacao">
+    <TituloSecao id="h-programacao" kicker={d.schedule.kicker} text={d.schedule.title} lead={d.schedule.lead} />
+    <ol class="lb-programa reveal">
       {d.schedule.items.map((it) => (
-        <li class="reveal">
-          <span class="timeline__time caps">{it.time}</span>
-          <div>
-            <h3 class="timeline__title">{it.title}</h3>
-            <p>{it.text}</p>
-          </div>
+        <li>
+          <span class="lb-programa__hora">{it.time}</span>
+          <h3 class="lb-programa__titulo">{it.title}</h3>
+          <p class="lb-programa__texto">{it.text}</p>
         </li>
       ))}
     </ol>
   </section>
 
-  <section class="section" id="local" aria-labelledby="h-venue">
-    <SectionTitle id="h-venue" text={d.venue.title} />
-    <div class="venue wrap">
-      <Art name="ramo-esquerdo" class="venue__branch" />
-      <div class="venue__text reveal">
-        <Art name="lettering-local" class="venue__lettering" label="Santa Teresa, Rio de Janeiro" />
-        <p>{d.venue.text}</p>
-        <a class="btn" href={config.venue.mapsUrl} target="_blank" rel="noopener">{d.venue.map}</a>
-      </div>
-      <Art name="ramo-direito" class="venue__branch" />
+  <section class="secao secao--esmalte" id="hospedagem" aria-labelledby="h-hospedagem">
+    <TituloSecao id="h-hospedagem" kicker={d.travel.kicker} text={d.travel.title} />
+    <div class="wrap cartoes">
+      {d.travel.items.map((it) => <CartaoEvento meta={it.meta} title={it.title} text={it.text} />)}
     </div>
   </section>
 
-  <section class="section" id="traje" aria-labelledby="h-dress">
-    <SectionTitle id="h-dress" text={d.dressCode.title} />
-    <div class="narrow center reveal">
-      <p class="caps">{d.dressCode.name}</p>
-      <p>{d.dressCode.text}</p>
-    </div>
-  </section>
-
-  <section class="section" id="hospedagem" aria-labelledby="h-travel">
-    <SectionTitle id="h-travel" text={d.travel.title} />
-    <div class="wrap cards">
-      {d.travel.items.map((it) => (
-        <article class="card reveal">
-          <h3 class="caps">{it.title}</h3>
-          <p>{it.text}</p>
-        </article>
-      ))}
-    </div>
-  </section>
-
-  <section class="section" id="duvidas" aria-labelledby="h-faq">
-    <SectionTitle id="h-faq" text={d.faq.title} />
-    <div class="narrow faq">
-      {d.faq.items.map((it) => (
-        <details class="reveal">
+  <section class="secao" id="perguntas" aria-labelledby="h-perguntas">
+    <TituloSecao id="h-perguntas" kicker={d.faq.kicker} text={d.faq.title} />
+    <div class="lb-perguntas reveal">
+      {d.faq.items.map((it, i) => (
+        <details open={i === 0}>
           <summary>{it.q}</summary>
           <p>{it.a}</p>
         </details>
@@ -81,67 +70,50 @@ const d = t(lang);
     </div>
   </section>
 
-  <section class="section rsvp-section" id="rsvp" aria-labelledby="h-rsvp">
-    <SectionTitle id="h-rsvp" text={d.rsvp.title} />
-    <p class="narrow center rsvp-intro">{d.rsvp.intro}</p>
+  <section class="secao rsvp-chamada" aria-labelledby="h-chamada">
+    <div class="lb-painel lb-juntas reveal">
+      <div class="lb-painel__conteudo">
+        <p class="lb-titulo__sobre">{d.rsvp.panelKicker}</p>
+        <h2 id="h-chamada" class="lb-titulo__texto rsvp-chamada__titulo">{d.rsvp.panelTitle}</h2>
+        <Art name="concha" class="rsvp-chamada__concha" />
+        <a class="lb-btn lb-btn--primario" href="#rsvp">{d.hero.cta}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="secao rsvp" id="rsvp" aria-labelledby="h-rsvp">
+    <TituloSecao id="h-rsvp" kicker={d.rsvp.kicker} text={d.rsvp.title} lead={d.rsvp.intro} />
     <RSVPForm lang={lang} />
   </section>
 
-  <section class="section gifts-teaser" aria-labelledby="h-gifts">
+  <section class="secao secao--esmalte presentes-chamada" aria-labelledby="h-presentes">
     <div class="narrow center reveal">
-      <div class="divider"><Art name="concha" /></div>
-      <h2 id="h-gifts" class="script gifts-teaser__title">{d.gifts.title}</h2>
-      <p>{d.gifts.intro}</p>
-      <a class="btn btn--solid" href={route('gifts', lang)}>{d.nav.gifts}</a>
+      <Ornamento />
+      <p class="lb-titulo__sobre presentes-chamada__sobre">{d.gifts.kicker}</p>
+      <h2 id="h-presentes" class="lb-titulo__texto">{d.gifts.title}</h2>
+      <p class="lb-titulo__lead presentes-chamada__lead">{d.gifts.intro}</p>
+      <a class="lb-btn lb-btn--secundario" href={route('gifts', lang)}>{d.gifts.teaserCta}</a>
     </div>
   </section>
 </Base>
 
 <style>
-  .story { font-size: var(--step-1); text-align: center; }
+  .historia { font: var(--text-corpo); text-align: center; max-width: 560px; }
 
-  .timeline { list-style: none; padding: 0; margin-block: 0; }
-  .timeline li {
-    display: grid; grid-template-columns: 7.5rem 1fr; gap: 24px;
-    padding: 22px 0; border-bottom: 1px solid var(--ink-faint);
+  .cartoes {
+    display: grid; gap: var(--spacing-l); justify-content: center;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 300px));
   }
-  .timeline li:last-child { border-bottom: 0; }
-  .timeline__time { padding-top: 0.45em; }
-  .timeline__title { font-size: var(--step-2); line-height: 1.1; margin-bottom: 4px; }
-  .timeline p { margin: 0; color: var(--ink-soft); }
-  @media (max-width: 520px) { .timeline li { grid-template-columns: 1fr; gap: 4px; } }
+  .cartoes--dois { grid-template-columns: repeat(auto-fit, minmax(260px, 340px)); }
 
-  .venue { display: grid; grid-template-columns: 1fr minmax(0, 520px) 1fr; align-items: center; gap: 24px; }
-  .venue__text { text-align: center; }
-  .venue :global(.venue__lettering) { width: min(100%, 340px); margin: 0 auto 28px; }
-  .venue :global(.venue__branch) { width: 90px; justify-self: center; opacity: 0.9; }
-  @media (max-width: 700px) {
-    .venue { grid-template-columns: 1fr; }
-    .venue :global(.venue__branch) { display: none; }
+  .rsvp-chamada { padding-bottom: 0; }
+  .rsvp-chamada .lb-painel { width: min(100% - 2 * var(--spacing-m), 640px); margin-inline: auto; }
+  .rsvp-chamada__titulo { font-size: clamp(34px, 6vw, 44px); }
+  .rsvp-chamada :global(.rsvp-chamada__concha) { width: 48px; color: var(--cobalto); }
+  @media (max-width: 520px) {
+    .rsvp-chamada .lb-painel { padding: var(--spacing-3xl) var(--spacing-m) var(--spacing-xl); }
   }
 
-  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-  .card {
-    padding: 28px 24px; border: var(--line) solid var(--ink-faint); border-radius: var(--radius);
-    background: var(--paper); text-align: center;
-  }
-  .card h3 { margin-bottom: 12px; }
-  .card p { margin: 0; }
-
-  .faq details { border-bottom: 1px solid var(--ink-faint); }
-  .faq summary {
-    list-style: none; cursor: pointer; padding: 18px 36px 18px 0; position: relative;
-    font-size: var(--step-1); font-weight: 600;
-  }
-  .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after {
-    content: '+'; position: absolute; right: 4px; top: 50%; translate: 0 -50%;
-    font-size: 1.6em; font-weight: 400; transition: rotate 0.2s;
-  }
-  .faq details[open] summary::after { rotate: 45deg; }
-  .faq details p { padding-bottom: 12px; }
-
-  .rsvp-intro { margin-bottom: 40px; }
-  .gifts-teaser__title { font-size: var(--step-script); margin: 24px 0 20px; }
-  .gifts-teaser .divider :global(.art) { width: 64px; }
+  .presentes-chamada__sobre { margin: var(--spacing-l) 0 var(--spacing-xsm); }
+  .presentes-chamada__lead { margin: var(--spacing-m) auto var(--spacing-xl); }
 </style>

@@ -1,0 +1,13 @@
+---
+/** TituloSecao (DS): sobretítulo, título serif grande, concha e parágrafo opcional. */
+import Art from './Art.astro';
+
+interface Props { id?: string; kicker: string; text: string; lead?: string; tag?: 'h1' | 'h2' }
+const { id, kicker, text, lead, tag: Tag = 'h2' } = Astro.props;
+---
+<header class="lb-titulo reveal">
+  <p class="lb-titulo__sobre">{kicker}</p>
+  <Tag id={id} class="lb-titulo__texto">{text}</Tag>
+  <Art name="concha" class="lb-titulo__concha" />
+  {lead && <p class="lb-titulo__lead">{lead}</p>}
+</header>

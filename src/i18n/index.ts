@@ -16,7 +16,6 @@ export function t(lang: Lang): Dict {
 export const routes = {
   home: { pt: '/', en: '/en/', es: '/es/' },
   gifts: { pt: '/presentes/', en: '/en/gifts/', es: '/es/regalos/' },
-  style: { pt: '/estilo/', en: '/estilo/', es: '/estilo/' },
 } as const;
 export type RouteKey = keyof typeof routes;
 

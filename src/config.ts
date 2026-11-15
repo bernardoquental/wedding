@@ -5,11 +5,10 @@ export const config = {
   couple: 'Luiza & Bernardo',
   /** Data e hora da cerimônia (horário de Brasília). */
   date: '2027-03-20T16:00:00-03:00',
-  venue: {
-    name: 'Santa Teresa',
-    city: 'Rio de Janeiro',
-    // Troque pelo endereço exato quando definido.
-    mapsUrl: 'https://maps.google.com/?q=Santa+Teresa,+Rio+de+Janeiro',
+  /** Links de mapa de cada momento (textos ficam em src/i18n). */
+  events: {
+    ceremony: { mapsUrl: 'https://maps.google.com/?q=Santa+Teresa,+Rio+de+Janeiro' },
+    reception: { mapsUrl: 'https://maps.google.com/?q=Santa+Teresa,+Rio+de+Janeiro' },
   },
   /** Prazo para confirmar presença. */
   rsvpDeadline: '2027-01-31',

@@ -1,4 +1,5 @@
 ---
+/** Formulário de RSVP com os componentes CampoTexto, EscolhaPresenca e Botao do design system. */
 import { t, type Lang } from '../i18n';
 
 interface Props { lang: Lang }
@@ -6,7 +7,10 @@ const { lang } = Astro.props;
 const d = t(lang).rsvp;
 const messages = {
   fullNameError: d.fullNameError,
+  fullNameHint: d.fullNameHint,
   contactError: d.contactError,
+  contactHint: d.contactHint,
+  guestError: d.guestError,
   sending: d.sending,
   submit: d.submit,
   successYes: d.successYes,
@@ -16,95 +20,106 @@ const messages = {
   guestName: d.guestName,
 };
 ---
-<form class="rsvp narrow" novalidate data-messages={JSON.stringify(messages)}>
-  <label class="field">
-    <span>{d.fullName}</span>
-    <input class="input" name="fullName" autocomplete="name" required aria-describedby="fullName-hint fullName-err" />
-    <small id="fullName-hint">{d.fullNameHint}</small>
-    <small id="fullName-err" class="error" hidden></small>
+<form class="rsvp-form narrow" novalidate data-messages={JSON.stringify(messages)}>
+  <label class="lb-campo" data-field="fullName">
+    <span class="lb-campo__rotulo">{d.fullName}</span>
+    <input class="lb-campo__input" name="fullName" autocomplete="name" required aria-describedby="ajuda-nome" />
+    <span id="ajuda-nome" class="lb-campo__ajuda">{d.fullNameHint}</span>
   </label>
 
-  <div class="rsvp__row">
-    <label class="field">
-      <span>{d.email}</span>
-      <input class="input" type="email" name="email" autocomplete="email" />
+  <div class="rsvp-form__par">
+    <label class="lb-campo" data-field="email">
+      <span class="lb-campo__rotulo">{d.email}</span>
+      <input class="lb-campo__input" type="email" name="email" autocomplete="email" aria-describedby="ajuda-contato" />
     </label>
-    <label class="field">
-      <span>{d.phone}</span>
-      <input class="input" type="tel" name="phone" autocomplete="tel" />
+    <label class="lb-campo">
+      <span class="lb-campo__rotulo">{d.phone}</span>
+      <input class="lb-campo__input" type="tel" name="phone" autocomplete="tel" aria-describedby="ajuda-contato" />
     </label>
+    <span id="ajuda-contato" class="lb-campo__ajuda rsvp-form__contato" data-field="contact">{d.contactHint}</span>
   </div>
-  <p id="contact-err" class="error" hidden></p>
 
-  <fieldset class="field">
+  <fieldset class="lb-escolha">
     <legend>{d.attending}</legend>
-    <label class="choice"><input type="radio" name="attending" value="yes" checked /> {d.yes}</label>
-    <label class="choice"><input type="radio" name="attending" value="no" /> {d.no}</label>
+    <label class="lb-opcao">
+      <input type="radio" name="attending" value="yes" checked />
+      <span class="lb-opcao__titulo">{d.yes}</span><span class="lb-opcao__texto">{d.yesText}</span>
+    </label>
+    <label class="lb-opcao">
+      <input type="radio" name="attending" value="no" />
+      <span class="lb-opcao__titulo">{d.no}</span><span class="lb-opcao__texto">{d.noText}</span>
+    </label>
   </fieldset>
 
-  <div class="rsvp__yes">
-    <label class="field">
-      <span>{d.guests}</span>
-      <select class="input" name="guests">
+  <div class="rsvp-form__sim">
+    <label class="lb-campo">
+      <span class="lb-campo__rotulo">{d.guests}</span>
+      <select class="lb-campo__input" name="guests">
         {[0, 1, 2, 3, 4].map((n) => <option value={n}>{n}</option>)}
       </select>
     </label>
-    <div class="rsvp__guests"></div>
-    <label class="field">
-      <span>{d.dietary}</span>
-      <input class="input" name="dietary" />
+    <div class="rsvp-form__convidados"></div>
+    <label class="lb-campo">
+      <span class="lb-campo__rotulo">{d.dietary}</span>
+      <input class="lb-campo__input" name="dietary" placeholder={d.dietaryHint} />
     </label>
   </div>
 
-  <label class="field">
-    <span>{d.message}</span>
-    <textarea class="input" name="message" rows="4"></textarea>
+  <label class="lb-campo">
+    <span class="lb-campo__rotulo">{d.message}</span>
+    <textarea class="lb-campo__input" name="message" rows="4"></textarea>
   </label>
 
   <!-- Campo isca para robôs de spam: humanos não veem -->
   <label class="visually-hidden" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off" /></label>
 
   <div class="center">
-    <button class="btn btn--solid" type="submit">{d.submit}</button>
+    <button class="lb-btn lb-btn--primario" type="submit">{d.submit}</button>
   </div>
-  <div class="rsvp__status" role="status" aria-live="polite"></div>
+  <div class="rsvp-form__status" role="status" aria-live="polite"></div>
 </form>
 
 <script>
   import { send } from '../lib/api';
   import { isFullName, isEmail, isPhone } from '../lib/validate';
 
-  document.querySelectorAll<HTMLFormElement>('form.rsvp').forEach((form) => {
+  document.querySelectorAll<HTMLFormElement>('form.rsvp-form').forEach((form) => {
     const m = JSON.parse(form.dataset.messages!);
-    const el = <T extends Element = HTMLInputElement>(sel: string) => form.querySelector<T>(sel)!;
-    const guestsBox = el<HTMLDivElement>('.rsvp__guests');
-    const yesBox = el<HTMLDivElement>('.rsvp__yes');
-    const status = el<HTMLDivElement>('.rsvp__status');
-    const button = el<HTMLButtonElement>('button[type=submit]');
+    const q = <T extends Element = HTMLInputElement>(sel: string) => form.querySelector<T>(sel)!;
+    const guestsBox = q<HTMLDivElement>('.rsvp-form__convidados');
+    const yesBox = q<HTMLDivElement>('.rsvp-form__sim');
+    const status = q<HTMLDivElement>('.rsvp-form__status');
+    const button = q<HTMLButtonElement>('button[type=submit]');
 
     const renderGuests = () => {
-      const n = Number(el<HTMLSelectElement>('[name=guests]').value);
+      const n = Number(q<HTMLSelectElement>('[name=guests]').value);
       const current = [...guestsBox.querySelectorAll('input')].map((i) => i.value);
       guestsBox.innerHTML = '';
       for (let i = 0; i < n; i++) {
         const label = document.createElement('label');
-        label.className = 'field';
-        label.innerHTML = `<span>${m.guestName} ${i + 1}</span><input class="input" name="guest${i}" autocomplete="off" />`;
+        label.className = 'lb-campo';
+        label.innerHTML =
+          `<span class="lb-campo__rotulo"></span><input class="lb-campo__input" name="guest${i}" autocomplete="off" />` +
+          `<span class="lb-campo__ajuda" hidden></span>`;
+        label.querySelector('.lb-campo__rotulo')!.textContent = `${m.guestName} ${i + 1}`;
         label.querySelector('input')!.value = current[i] ?? '';
         guestsBox.append(label);
       }
     };
-    el('[name=guests]').addEventListener('change', renderGuests);
+    q('[name=guests]').addEventListener('change', renderGuests);
     form.querySelectorAll('[name=attending]').forEach((r) =>
       r.addEventListener('change', () => {
-        yesBox.hidden = el('[name=attending]:checked').value !== 'yes';
+        yesBox.hidden = q('[name=attending]:checked').value !== 'yes';
       }),
     );
 
-    const setError = (input: HTMLInputElement, errEl: HTMLElement, msg: string | null) => {
-      input.setAttribute('aria-invalid', msg ? 'true' : 'false');
-      errEl.hidden = !msg;
-      errEl.textContent = msg ?? '';
+    /** Estado de erro do CampoTexto: borda tijolo + mensagem na ajuda. */
+    const setError = (field: HTMLElement, help: HTMLElement, inputs: HTMLElement[], msg: string | null, hint = '') => {
+      field.classList.toggle('lb-campo--erro', !!msg);
+      help.classList.toggle('erro', !!msg);
+      help.hidden = !msg && !hint;
+      help.textContent = msg ?? hint;
+      inputs.forEach((i) => i.setAttribute('aria-invalid', msg ? 'true' : 'false'));
     };
 
     form.addEventListener('submit', async (e) => {
@@ -115,18 +130,20 @@ const messages = {
       const guests = attending === 'yes' ? Number(get('guests')) : 0;
       const guestNames = Array.from({ length: guests }, (_, i) => get(`guest${i}`));
 
-      const nameInput = el('[name=fullName]');
-      let valid = true;
       const nameOk = isFullName(get('fullName'));
-      setError(nameInput, el<HTMLElement>('#fullName-err'), nameOk ? null : m.fullNameError);
-      valid &&= nameOk;
+      setError(q<HTMLElement>('[data-field=fullName]'), q<HTMLElement>('#ajuda-nome'), [q('[name=fullName]')],
+        nameOk ? null : m.fullNameError, m.fullNameHint);
       const contactOk = isEmail(get('email')) || isPhone(get('phone'));
-      setError(el('[name=email]'), el<HTMLElement>('#contact-err'), contactOk ? null : m.contactError);
-      valid &&= contactOk;
+      const contactHelp = q<HTMLElement>('#ajuda-contato');
+      setError(q<HTMLElement>('.rsvp-form__par'), contactHelp, [q('[name=email]'), q('[name=phone]')],
+        contactOk ? null : m.contactError, m.contactHint);
+      form.querySelectorAll<HTMLElement>('.rsvp-form__par .lb-campo').forEach((f) => f.classList.toggle('lb-campo--erro', !contactOk));
+      let valid = nameOk && contactOk;
       guestNames.forEach((g, i) => {
-        const input = el(`[name=guest${i}]`);
+        const input = q(`[name=guest${i}]`);
+        const field = input.closest<HTMLElement>('.lb-campo')!;
         const ok = isFullName(g);
-        input.setAttribute('aria-invalid', ok ? 'false' : 'true');
+        setError(field, field.querySelector<HTMLElement>('.lb-campo__ajuda')!, [input], ok ? null : m.guestError);
         valid &&= ok;
       });
       if (!valid) {
@@ -149,13 +166,24 @@ const messages = {
           website: get('website'),
         });
         if (!res.ok) throw new Error(res.error);
-        form.querySelectorAll('.field, fieldset, .rsvp__row, .center').forEach((n) => ((n as HTMLElement).hidden = true));
-        status.innerHTML = `<p class="notice">${attending === 'yes' ? m.successYes : m.successNo}</p>` +
-          (res.demo ? `<p class="notice notice--soft">${m.demo}</p>` : '');
+        form.querySelectorAll<HTMLElement>(':scope > :not(.rsvp-form__status)').forEach((n) => (n.hidden = true));
+        const ok = document.createElement('p');
+        ok.className = 'aviso';
+        ok.textContent = attending === 'yes' ? m.successYes : m.successNo;
+        status.replaceChildren(ok);
+        if (res.demo) {
+          const demo = document.createElement('p');
+          demo.className = 'aviso aviso--suave';
+          demo.textContent = m.demo;
+          status.append(demo);
+        }
         status.scrollIntoView({ block: 'center', behavior: 'smooth' });
       } catch (err) {
         console.error(err);
-        status.innerHTML = `<p class="error center">${m.error}</p>`;
+        const p = document.createElement('p');
+        p.className = 'erro center';
+        p.textContent = m.error;
+        status.replaceChildren(p);
         button.disabled = false;
         button.textContent = m.submit;
       }
@@ -164,8 +192,12 @@ const messages = {
 </script>
 
 <style>
-  .rsvp__row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
-  @media (max-width: 600px) { .rsvp__row { grid-template-columns: 1fr; } }
-  .rsvp__status { margin-top: 16px; display: grid; gap: 12px; }
-  .rsvp__status :global(.notice:first-child) { font-size: var(--step-1); }
+  .rsvp-form { display: grid; gap: var(--spacing-xl); }
+  .rsvp-form__par { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-xsm) var(--spacing-l); }
+  .rsvp-form__contato { grid-column: 1 / -1; }
+  .rsvp-form__sim, .rsvp-form__convidados { display: grid; gap: var(--spacing-xl); }
+  .rsvp-form__convidados:empty { display: none; }
+  .rsvp-form__status { display: grid; gap: var(--spacing-m); }
+  .rsvp-form :global(select.lb-campo__input) { appearance: auto; }
+  @media (max-width: 600px) { .rsvp-form__par { grid-template-columns: 1fr; } }
 </style>

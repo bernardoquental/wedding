@@ -1,0 +1,14 @@
+---
+/** BarraAzulejo (DS): silhar de azulejos de padrão entre cercaduras; `fina` = só cercadura. */
+interface Props { fina?: boolean }
+const { fina = false } = Astro.props;
+---
+{fina ? (
+  <div class="lb-barra lb-barra--fina" aria-hidden="true"><div class="lb-barra__cercadura"></div></div>
+) : (
+  <div class="lb-barra" aria-hidden="true">
+    <div class="lb-barra__cercadura"></div>
+    <div class="lb-barra__padrao"></div>
+    <div class="lb-barra__cercadura"></div>
+  </div>
+)}
